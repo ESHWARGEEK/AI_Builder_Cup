@@ -1,0 +1,60 @@
+steps:
+  # 1. Install dependencies & type-check Next.js App
+  - name: 'node:20-slim'
+    id: 'build-frontend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        cd frontend
+        npm ci
+        npx tsc --noEmit
+        npm run build
+
+  # 2. Build production frontend container image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-docker'
+    args:
+      - 'build'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:$COMMIT_SHA'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:latest'
+      - '-f'
+      - 'frontend/Dockerfile'
+      - 'frontend'
+
+  # 3. Push container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-docker'
+    args:
+      - 'push'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:$COMMIT_SHA'
+
+  # 4. Deploy Next.js to Cloud Run
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'deploy-frontend-cloud-run'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:$COMMIT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+      - '--allow-unauthenticated'
+      - '--cpu=1'
+      - '--memory=1Gi'
+      - '--concurrency=100'
+      - '--set-env-vars=NODE_ENV=production,NEXT_PUBLIC_API_URL=https://eka-backend-$PROJECT_NUMBER.$_REGION.run.app'
+
+images:
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:$COMMIT_SHA'
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-frontend:latest'
+
+substitutions:
+  _REGION: 'us-central1'
+  _SERVICE_NAME: 'eka-frontend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY

@@ -1,0 +1,62 @@
+steps:
+  # 1. Run Python unit tests and verification checks
+  - name: 'python:3.11-slim'
+    id: 'test-backend'
+    entrypoint: 'bash'
+    args:
+      - '-c'
+      - |
+        pip install --no-cache-dir -r backend/requirements.txt pytest pytest-asyncio
+        pytest backend/tests/ -v --tb=short
+
+  # 2. Build backend container image
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'build-image'
+    args:
+      - 'build'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:$COMMIT_SHA'
+      - '-t'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:latest'
+      - '-f'
+      - 'backend/Dockerfile'
+      - 'backend'
+
+  # 3. Push container image to Artifact Registry
+  - name: 'gcr.io/cloud-builders/docker'
+    id: 'push-image'
+    args:
+      - 'push'
+      - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:$COMMIT_SHA'
+
+  # 4. Deploy to Cloud Run with least-privilege Workload Identity
+  - name: 'gcr.io/google.com/cloudsdktool/cloud-sdk:slim'
+    id: 'deploy-cloud-run'
+    entrypoint: 'gcloud'
+    args:
+      - 'run'
+      - 'deploy'
+      - '$_SERVICE_NAME'
+      - '--image=$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:$COMMIT_SHA'
+      - '--region=$_REGION'
+      - '--platform=managed'
+      - '--service-account=eka-backend-sa@$PROJECT_ID.iam.gserviceaccount.com'
+      - '--allow-unauthenticated'
+      - '--cpu=2'
+      - '--memory=2Gi'
+      - '--concurrency=80'
+      - '--min-instances=1'
+      - '--max-instances=20'
+      - '--vpc-connector=eka-vpc-connector'
+      - '--set-env-vars=ENVIRONMENT=production,GCP_PROJECT_ID=$PROJECT_ID,GCP_REGION=$_REGION,MODEL_ARMOR_ENABLED=true'
+
+images:
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:$COMMIT_SHA'
+  - '$_REGION-docker.pkg.dev/$PROJECT_ID/eka-repo/eka-backend:latest'
+
+substitutions:
+  _REGION: 'us-central1'
+  _SERVICE_NAME: 'eka-backend'
+
+options:
+  logging: CLOUD_LOGGING_ONLY
