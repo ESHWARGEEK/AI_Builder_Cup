@@ -23,7 +23,7 @@ from opentelemetry.instrumentation.fastapi import FastAPIInstrumentor
 from opentelemetry.sdk.trace import TracerProvider
 from opentelemetry.sdk.trace.export import BatchSpanProcessor
 
-from api.routers import chat, documents, invoices, audit, health
+from api.routers import chat, documents, invoices, audit, health, compliance, proxy
 from config import get_settings
 from db.alloydb import init_alloydb, close_alloydb
 from db.firestore import init_firestore
@@ -112,6 +112,8 @@ def create_app() -> FastAPI:
     app.include_router(documents.router, prefix="/api/v1", tags=["Documents"])
     app.include_router(invoices.router, prefix="/api/v1", tags=["Invoices"])
     app.include_router(audit.router, prefix="/api/v1", tags=["Audit"])
+    app.include_router(compliance.router, prefix="/api/v1", tags=["Compliance"])
+    app.include_router(proxy.router, prefix="/api/v1", tags=["Workspace Proxy"])
 
     # ── OpenTelemetry instrumentation ─────────────────────────────────────────
     FastAPIInstrumentor.instrument_app(app)

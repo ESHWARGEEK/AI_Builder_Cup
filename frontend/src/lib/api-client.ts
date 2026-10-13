@@ -78,9 +78,70 @@ export interface BoundingBox {
 
 export interface LineItem {
   description?: { value: string; confidence: number; bounding_box: BoundingBox | null };
-  quantity?: { value: string; confidence: number };
-  unit_price?: { value: string; confidence: number };
-  amount?: { value: string; confidence: number };
+  quantity?: { value: number; confidence: number };
+  unit_price_usd?: { value: number; confidence: number };
+  amount_usd?: { value: number; confidence: number };
+  unit_price?: { value: number; confidence: number };
+  amount?: { value: number; confidence: number };
+}
+
+// ── Compliance & Redline Models (Idea 1) ──────────────────────────────────────
+
+export interface ClauseRedline {
+  id: string;
+  clause_type: string;
+  original_clause: string;
+  replacement_clause: string;
+  policy_violation_rationale: string;
+  severity: "CRITICAL" | "WARNING" | "PASSED";
+  applied: boolean;
+  citation?: string;
+}
+
+export interface ComplianceReport {
+  document_id: string;
+  risk_level: "CRITICAL" | "WARNING" | "PASSED";
+  redlines: ClauseRedline[];
+  corporate_policy_matches: string[];
+  regulatory_framework_matches: string[];
+  summary: string;
+  timestamp: string;
+}
+
+// ── AutoWorkspace Proxy Models (Idea 2) ───────────────────────────────────────
+
+export type ProxyMode = "ACTIVE_ATTENDING" | "OOO_INTERCEPTING" | "OFFLINE";
+
+export interface LedgerRow {
+  id: string;
+  timestamp: string;
+  vendor_name: string;
+  invoice_number: string;
+  total_amount_usd: number;
+  confidence_score: number;
+  compliance_status: string;
+  approved_by: string;
+  sheet_row_index?: number;
+}
+
+export interface ExecutiveBriefDoc {
+  id: string;
+  title: string;
+  summary: string;
+  compliance_notes: string;
+  recommended_actions: string[];
+  markdown_content: string;
+  created_at: string;
+}
+
+export interface ProxyEvent {
+  id: string;
+  source: string;
+  event_type: string;
+  summary: string;
+  status: "TRIAGED" | "QUEUED_HITL" | "AUTO_RESOLVED";
+  created_at: string;
+  payload: Record<string, unknown>;
 }
 
 export interface VerificationResult {
@@ -282,6 +343,75 @@ class EKAApiClient {
 
   async getAuditEntry(entryId: string): Promise<AuditEntry> {
     return this.request(`/audit/${entryId}`);
+  }
+
+  // ── Compliance & Redlines (Idea 1) ─────────────────────────────────────────
+
+  async auditCompliance(
+    documentId: string,
+    documentText?: string,
+    extractedFields?: Record<string, unknown>
+  ): Promise<ComplianceReport> {
+    return this.request("/compliance/audit", {
+      method: "POST",
+      body: JSON.stringify({
+        document_id: documentId,
+        document_text: documentText,
+        extracted_fields: extractedFields,
+      }),
+    });
+  }
+
+  async listRedlines(): Promise<ClauseRedline[]> {
+    return this.request("/compliance/redlines");
+  }
+
+  async applyRedline(redlineId: string): Promise<ClauseRedline> {
+    return this.request(`/compliance/redlines/${redlineId}/apply`, {
+      method: "POST",
+    });
+  }
+
+  // ── AutoWorkspace Proxy & Artifacts (Idea 2) ────────────────────────────────
+
+  async getProxyStatus(): Promise<{
+    mode: ProxyMode;
+    total_events: number;
+    queued_hitl_count: number;
+    auto_resolved_count: number;
+  }> {
+    return this.request("/proxy/status");
+  }
+
+  async updateProxyStatus(mode: ProxyMode): Promise<{ status: string; mode: ProxyMode }> {
+    return this.request("/proxy/status", {
+      method: "POST",
+      body: JSON.stringify({ mode }),
+    });
+  }
+
+  async listProxyEvents(): Promise<ProxyEvent[]> {
+    return this.request("/proxy/events");
+  }
+
+  async simulateProxyEvent(req: {
+    event_type?: string;
+    source?: string;
+    amount?: number;
+    vendor?: string;
+  }): Promise<ProxyEvent> {
+    return this.request("/proxy/simulate-event", {
+      method: "POST",
+      body: JSON.stringify(req),
+    });
+  }
+
+  async getLedgerRows(): Promise<LedgerRow[]> {
+    return this.request("/proxy/ledger");
+  }
+
+  async getExecutiveBriefs(): Promise<ExecutiveBriefDoc[]> {
+    return this.request("/proxy/briefs");
   }
 
   // ── Health ────────────────────────────────────────────────────────────────
