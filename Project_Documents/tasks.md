@@ -16,6 +16,7 @@
 - [x] **Phase 6: AutoWorkspace Proxy & Artifact Generation Engine (Idea 2)**
 - [x] **Phase 7: Full-Stack Next.js 14 Cockpit & Side-by-Side UI**
 - [x] **Phase 8: End-to-End Verification & Demonstration Scenarios**
+- [x] **Phase 9: Google Stitch Swiss Obsidian Executive Design Integration**
 
 ---
 
@@ -92,3 +93,17 @@
   - Ingest vendor agreement with Net 15 payment terms and uncapped liability -> Verify redline diff generated, risk tagged `CRITICAL`, remediation clause suggested.
 - [x] **T8.4:** Test Scenario 4 (Proxy OOO Simulation):
   - Toggle Proxy Mode -> Trigger background inbox event -> Verify agent triages and stages artifacts without human intervention.
+
+### Phase 9: Google Stitch Swiss Obsidian Executive Design Integration
+- [x] **T9.1:** Import and save Google Stitch HTML export to `frontend/public/stitch.html` for side-by-side reference.
+- [x] **T9.2:** Configure `tailwind.config.ts` with Obsidian (`#0d1117`–`#2d333b`) and Executive (`#e6edf3`–`#f85149`) color tokens.
+- [x] **T9.3:** Refactor `workspace/page.tsx` to 3-pane Swiss grid layout:
+  - 52px Header (NexusWork AP Core, Ledger Synced, Elena Rostova profile).
+  - 38px Telemetry Bar (#REQ-2026-EMEA-09, AAL-3, AlloyDB Secured).
+  - 240px Left Pane (OOO Proxy toggle, Verification Queue, Grounding References, SPIFFE mTLS).
+  - Flex-1 Center (Dell AP Ingest, PDF chip, AP Analysis, HITL Card, Directive input bar).
+  - 500px Right Pane (Clause Redline / Document AI / Live Ledger tabs).
+- [x] **T9.4:** Restyle `HITLActionCard.tsx` with Obsidian card, deterministic validation matrix, Spiffe ID authorize button.
+- [x] **T9.5:** Restyle `RedlineDiffViewer.tsx` with vendor (-) / policy (+) diff cards, Clause 18.1 penalty variance, export action.
+- [x] **T9.6:** Restyle `LiveArtifactCanvas.tsx` with AlloyDB multi-region ledger table (Time/Entity/Sum/State), SAP connector.
+- [x] **T9.7:** Validate `npm run build` with zero TypeScript errors and commit to `main`.
