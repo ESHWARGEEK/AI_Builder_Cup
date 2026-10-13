@@ -336,8 +336,19 @@ I have evaluated the agreement against our datastores:
           </h2>
         </div>
 
-        {/* Latency & Governance Telemetry Pill */}
+        {/* Latency & Governance Telemetry Pill + Stitch Prototype Link */}
         <div className="flex items-center gap-2">
+          <a
+            href="/stitch.html"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 hover:text-white flex items-center gap-1.5 transition-colors shadow-sm"
+            title="View pixel-perfect Google Stitch generated prototype"
+          >
+            <Sparkles className="w-3 h-3 text-cyan-400" />
+            <span>Google Stitch Prototype</span>
+            <ArrowUpRight className="w-3 h-3 text-indigo-400" />
+          </a>
           <div className="text-[10px] font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-2 shadow-sm">
             <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
             <span>RAG: 1.2s</span>

@@ -1,0 +1,972 @@
+<!DOCTYPE html>
+<html class="dark" lang="en">
+<head>
+  <meta charset="utf-8"/>
+  <meta content="width=device-width, initial-scale=1.0" name="viewport"/>
+  <meta content="web_dashboard" name="shell-type"/>
+  <title>NexusWork AI — Google Stitch Prototype</title>
+  <link href="https://fonts.googleapis.com" rel="preconnect"/>
+  <link crossorigin="" href="https://fonts.gstatic.com" rel="preconnect"/>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&amp;family=JetBrains+Mono:wght@400;500;600&amp;display=swap" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200" rel="stylesheet"/>
+  <link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:wght,FILL@100..700,0..1&amp;display=swap" rel="stylesheet"/>
+  <style>
+    @layer base {
+      html, body { margin:0; padding:0; }
+      body { overscroll-behavior:none; }
+      main > :first-child { margin-top:0!important; }
+      main > :last-child { margin-bottom:0!important; }
+    }
+    ::-webkit-scrollbar { display:none; }
+  </style>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script id="tailwind-config">
+    tailwind.config = {
+      "darkMode": "class",
+      "theme": {
+        "extend": {
+          "colors": {
+            "secondary": "#c3c0ff",
+            "on-tertiary-fixed": "#311400",
+            "surface-container-highest": "#31353f",
+            "surface-variant": "#31353f",
+            "primary-fixed-dim": "#adc6ff",
+            "on-tertiary-fixed-variant": "#723600",
+            "on-error-container": "#ffdad6",
+            "error": "#ffb4ab",
+            "primary-container": "#4d8eff",
+            "status-critical": "#EF4444",
+            "tertiary": "#ffb786",
+            "on-secondary-container": "#b3b1ff",
+            "surface-container": "#0F172A",
+            "tertiary-container": "#df7412",
+            "secondary-fixed": "#e2dfff",
+            "on-tertiary-container": "#461f00",
+            "on-primary-container": "#00285d",
+            "surface-container-low": "#181b25",
+            "on-secondary-fixed": "#0f0069",
+            "surface-base": "#090D16",
+            "on-primary-fixed-variant": "#004395",
+            "surface-elevated": "#1E293B",
+            "primary-fixed": "#d8e2ff",
+            "on-primary-fixed": "#001a42",
+            "surface-dim": "#0f131c",
+            "surface-container-high": "#262a34",
+            "outline-variant": "#424754",
+            "on-surface-variant": "#c2c6d6",
+            "secondary-fixed-dim": "#c3c0ff",
+            "surface": "#0f131c",
+            "surface-container-lowest": "#0a0e17",
+            "on-surface": "#dfe2ef",
+            "tertiary-fixed": "#ffdcc6",
+            "inverse-surface": "#dfe2ef",
+            "status-success": "#10B981",
+            "background": "#0f131c",
+            "on-error": "#690005",
+            "status-warning": "#F59E0B",
+            "error-container": "#93000a",
+            "surface-tint": "#adc6ff",
+            "inverse-on-surface": "#2c303a",
+            "on-background": "#dfe2ef",
+            "tertiary-fixed-dim": "#ffb786",
+            "on-secondary": "#1d00a5",
+            "on-primary": "#002e6a",
+            "surface-bright": "#353943",
+            "primary": "#adc6ff",
+            "on-tertiary": "#502400",
+            "secondary-container": "#3626ce",
+            "outline": "#8c909f",
+            "on-secondary-fixed-variant": "#3323cc",
+            "inverse-primary": "#005ac2"
+          },
+          "borderRadius": {
+            "DEFAULT": "0.125rem",
+            "lg": "0.25rem",
+            "xl": "0.5rem",
+            "full": "0.75rem"
+          },
+          "spacing": {
+            "space-xs": "0.25rem",
+            "space-lg": "1rem",
+            "gutter": "0.75rem",
+            "space-sm": "0.375rem",
+            "space-md": "0.75rem",
+            "margin": "1rem",
+            "space-xl": "1.5rem"
+          },
+          "fontFamily": {
+            "headline-lg": ["Inter"],
+            "body-lg": ["Inter"],
+            "label-lg": ["JetBrains Mono"],
+            "body-sm": ["Inter"],
+            "headline-md": ["Inter"],
+            "label-sm": ["JetBrains Mono"],
+            "label-md": ["JetBrains Mono"],
+            "headline-sm": ["Inter"],
+            "body-md": ["Inter"],
+            "headline-lg-mobile": ["Inter"]
+          },
+          "fontSize": {
+            "headline-lg": ["1.75rem", { "lineHeight": "2.25rem", "fontWeight": "600" }],
+            "body-lg": ["0.9375rem", { "lineHeight": "1.375rem", "fontWeight": "400" }],
+            "label-lg": ["0.8125rem", { "lineHeight": "1.125rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "body-sm": ["0.75rem", { "lineHeight": "1.125rem", "fontWeight": "400" }],
+            "headline-md": ["1.25rem", { "lineHeight": "1.75rem", "fontWeight": "600" }],
+            "label-sm": ["0.6875rem", { "lineHeight": "0.875rem", "letterSpacing": "0.04em", "fontWeight": "400" }],
+            "label-md": ["0.75rem", { "lineHeight": "1rem", "letterSpacing": "0.02em", "fontWeight": "500" }],
+            "headline-sm": ["1rem", { "lineHeight": "1.5rem", "fontWeight": "600" }],
+            "body-md": ["0.8125rem", { "lineHeight": "1.25rem", "fontWeight": "400" }],
+            "headline-lg-mobile": ["1.375rem", { "lineHeight": "1.75rem", "fontWeight": "600" }]
+          }
+        }
+      }
+    };
+  </script>
+</head>
+<body class="bg-surface-base text-on-surface antialiased selection:bg-primary-container selection:text-on-primary-container min-h-screen">
+  <!-- Switch banner to Next.js App -->
+  <div class="fixed top-2 right-4 z-[999] flex items-center gap-2 bg-surface-elevated/95 backdrop-blur border border-primary/30 px-3 py-1.5 rounded-full text-xs shadow-xl">
+    <span class="w-2 h-2 rounded-full bg-status-success animate-ping"></span>
+    <span class="text-on-surface font-medium font-label-sm">Google Stitch Active</span>
+    <a href="/workspace" class="px-2.5 py-1 rounded bg-primary-container text-on-primary-container font-semibold hover:opacity-90 transition-opacity ml-1">
+      Open React Cockpit →
+    </a>
+  </div>
+
+  <aside class="fixed left-0 top-0 h-screen w-[260px] bg-surface-container-lowest border-r border-surface-elevated z-50 flex flex-col justify-between overflow-hidden">
+    <div class="flex flex-col h-full">
+      <div class="p-space-md border-b border-surface-elevated bg-surface-container-lowest/60 backdrop-blur-sm">
+        <div class="p-space-sm rounded bg-surface-container border border-surface-elevated">
+          <div class="flex items-center justify-between mb-space-xs">
+            <span class="font-label-sm text-label-sm text-on-surface-variant uppercase tracking-wider">Proxy Mode</span>
+            <span class="px-space-xs py-0.5 rounded bg-status-success/10 border border-status-success/20 font-label-sm text-label-sm text-status-success font-semibold">OOO ON</span>
+          </div>
+          <div class="flex items-center gap-space-xs">
+            <span class="relative flex h-2 w-2">
+              <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+              <span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+            </span>
+            <span class="font-body-sm text-body-sm text-on-surface truncate">Email &amp; Cal Interceptor</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="flex-1 overflow-y-auto px-space-sm py-space-md space-y-space-md">
+        <div class="px-space-xs">
+          <span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Today Sessions</span>
+          <nav class="mt-space-xs space-y-1" data-active-classes="bg-surface-elevated text-primary font-semibold border-l-2 border-primary">
+            <a aria-current="page" class="flex items-center justify-between px-space-sm py-space-xs rounded transition-colors bg-surface-elevated text-primary font-semibold border-l-2 border-primary" data-path="audit-extract" href="#">
+              <span class="truncate">Initech Vendor INV-2026</span>
+              <span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-warning/10 text-status-warning border border-status-warning/20 shrink-0 ml-1">Approval</span>
+            </a>
+            <a class="flex items-center justify-between px-space-sm py-space-xs rounded font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-elevated hover:text-on-surface transition-colors" data-path="cloud-procure" href="#">
+              <span class="truncate">AWS Compute PO-901</span>
+              <span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-success/10 text-status-success border border-status-success/20 shrink-0 ml-1">Auto-OK</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="px-space-xs">
+          <span class="font-label-sm text-label-sm text-outline uppercase tracking-wider font-semibold">Previous 7 Days</span>
+          <nav class="mt-space-xs space-y-1" data-active-classes="bg-surface-elevated text-primary font-semibold border-l-2 border-primary">
+            <a class="flex items-center justify-between px-space-sm py-space-xs rounded font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-elevated hover:text-on-surface transition-colors" data-path="sox-audit" href="#">
+              <span class="truncate">Q4 SOX Ledger Review</span>
+              <span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-critical/10 text-status-critical border border-status-critical/20 shrink-0 ml-1">Alert</span>
+            </a>
+            <a class="flex items-center justify-between px-space-sm py-space-xs rounded font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-elevated hover:text-on-surface transition-colors" data-path="saas-renewal" href="#">
+              <span class="truncate">Datadog Tier-3 Expansion</span>
+              <span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-success/10 text-status-success border border-status-success/20 shrink-0 ml-1">Auto-OK</span>
+            </a>
+            <a class="flex items-center justify-between px-space-sm py-space-xs rounded font-body-sm text-body-sm text-on-surface-variant hover:bg-surface-elevated hover:text-on-surface transition-colors" data-path="travel-reconciliation" href="#">
+              <span class="truncate">EMEA Summit Travel Batches</span>
+              <span class="font-label-sm text-label-sm px-1.5 py-0.5 rounded bg-status-warning/10 text-status-warning border border-status-warning/20 shrink-0 ml-1">Approval</span>
+            </a>
+          </nav>
+        </div>
+
+        <div class="px-space-xs pt-space-xs">
+          <div class="p-space-sm rounded bg-surface-container border border-surface-elevated">
+            <div class="flex items-center gap-1.5 text-primary mb-1.5">
+              <span class="material-symbols-outlined text-[15px]">database</span>
+              <span class="font-label-sm text-label-sm uppercase tracking-wider font-semibold text-on-surface">RAG Datastores</span>
+            </div>
+            <div class="space-y-1 font-label-sm text-label-sm text-on-surface-variant">
+              <div class="flex items-center gap-1.5 truncate">
+                <span class="w-1.5 h-1.5 rounded-full bg-status-success shrink-0"></span>
+                <span class="truncate">Global Travel Policy 2026</span>
+              </div>
+              <div class="flex items-center gap-1.5 truncate">
+                <span class="w-1.5 h-1.5 rounded-full bg-status-success shrink-0"></span>
+                <span class="truncate">Procurement Rules v4.2</span>
+              </div>
+              <div class="flex items-center gap-1.5 truncate">
+                <span class="w-1.5 h-1.5 rounded-full bg-status-success shrink-0"></span>
+                <span class="truncate">EU AI Act Compliance</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="p-space-md border-t border-surface-elevated bg-surface-container-lowest">
+        <div class="flex items-center gap-space-sm mb-space-sm">
+          <div class="w-8 h-8 rounded bg-primary flex items-center justify-center shrink-0">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+          <div class="flex flex-col min-w-0">
+            <span class="font-body-sm text-body-sm font-semibold text-on-surface truncate">Elena Rostova</span>
+            <span class="font-label-sm text-label-sm text-on-surface-variant truncate">Senior AP Lead</span>
+          </div>
+        </div>
+        <div class="mb-space-sm px-space-xs py-1 rounded bg-surface-container border border-surface-elevated flex items-center gap-1.5">
+          <span class="material-symbols-outlined text-[13px] text-primary shrink-0">verified_user</span>
+          <span class="font-label-sm text-label-sm text-outline truncate">spiffe://corp.internal/agents/nexuswork</span>
+        </div>
+        <a class="w-full flex items-center justify-center gap-1.5 px-space-sm py-1.5 rounded bg-surface-elevated hover:bg-surface-variant text-on-surface font-label-sm text-label-sm transition-colors border border-outline-variant" href="/audit">
+          <span class="material-symbols-outlined text-[15px] text-primary">receipt_long</span>
+          <span>Audit Ledger (AlloyDB)</span>
+        </a>
+      </div>
+    </div>
+  </aside>
+
+  <div class="pl-[260px]">
+    <header class="fixed top-0 left-[260px] right-0 h-14 bg-surface-container/90 backdrop-blur-md border-b border-surface-elevated z-40 flex items-center justify-between px-space-lg">
+      <div class="flex items-center gap-space-lg">
+        <div class="flex items-center gap-space-sm">
+          <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary via-primary-container to-secondary flex items-center justify-center shadow-[0_0_12px_rgba(77,142,255,0.4)]">
+            <span class="material-symbols-outlined text-on-primary-container text-[20px]">neurology</span>
+          </div>
+          <div class="flex flex-col">
+            <div class="flex items-center gap-1.5">
+              <span class="font-headline-sm text-headline-sm font-bold bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent leading-none">NexusWork AI</span>
+              <span class="font-label-sm text-label-sm text-outline font-normal">v2.4</span>
+            </div>
+            <span class="font-label-sm text-label-sm text-on-surface-variant leading-tight">Autonomous Enterprise Agent</span>
+          </div>
+        </div>
+        <div class="h-4 w-px bg-surface-elevated hidden md:block"></div>
+        <div class="hidden md:flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant">
+          <span class="text-outline">Audit &amp; Extract:</span>
+          <span class="text-on-surface font-medium">Initech Vendor Contract #INV-2026-88</span>
+        </div>
+      </div>
+      <div class="flex items-center gap-space-md">
+        <div class="hidden lg:flex items-center gap-2 px-space-sm py-1 rounded bg-surface-base border border-surface-elevated font-label-sm text-label-sm text-on-surface-variant">
+          <span class="flex items-center gap-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+            <span class="text-outline">RAG:</span>
+            <span class="text-on-surface">1.2s</span>
+          </span>
+          <span class="text-outline-variant">|</span>
+          <span class="flex items-center gap-1">
+            <span class="text-outline">DocAI:</span>
+            <span class="text-on-surface">4.8s</span>
+          </span>
+          <span class="text-outline-variant">|</span>
+          <span class="text-status-warning font-medium">AAL 3 Eyes On Active</span>
+        </div>
+        <div class="flex items-center gap-space-xs">
+          <button class="w-8 h-8 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-elevated transition-colors"><span class="material-symbols-outlined text-[18px]">notifications</span></button>
+          <button class="w-8 h-8 rounded flex items-center justify-center text-on-surface-variant hover:text-on-surface hover:bg-surface-elevated transition-colors"><span class="material-symbols-outlined text-[18px]">help</span></button>
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0"><span class="material-symbols-outlined text-on-primary text-[18px]">person</span></div>
+        </div>
+      </div>
+    </header>
+
+    <main class="relative pt-14 bg-surface-base min-h-screen w-full">
+      <div class="flex flex-col w-full h-[calc(100vh-3.5rem)] overflow-hidden">
+        <div class="flex flex-1 w-full h-full overflow-hidden">
+          <!-- ==================== CENTER STAGE (FLEX-1) ==================== -->
+          <section class="flex-1 flex flex-col min-w-0 bg-surface-container relative">
+            <!-- Top Bar / Session Header & Telemetry -->
+            <div class="h-12 px-space-md bg-surface-container-low flex items-center justify-between shrink-0 shadow-sm z-10">
+              <div class="flex items-center gap-space-sm min-w-0">
+                <nav class="flex items-center gap-1.5 font-label-sm text-label-sm text-on-surface-variant shrink-0">
+                  <span class="hover:text-on-surface cursor-pointer">Autonomous AP</span>
+                  <span class="text-outline">/</span>
+                  <span class="hover:text-on-surface cursor-pointer">Contracts &amp; POs</span>
+                  <span class="text-outline">/</span>
+                </nav>
+                <div class="flex items-center gap-2 min-w-0">
+                  <span class="font-headline-sm text-headline-sm text-on-surface font-semibold truncate">Audit &amp; Extract: Initech Vendor Contract #INV-2026-88</span>
+                  <span class="px-2 py-0.5 rounded bg-status-warning/10 text-status-warning font-label-sm text-label-sm font-semibold shrink-0">HITL Gated</span>
+                </div>
+              </div>
+              <div class="flex items-center gap-2 px-2.5 py-1 rounded bg-surface-base font-label-sm text-label-sm shrink-0">
+                <span class="relative flex h-2 w-2">
+                  <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-status-success opacity-75"></span>
+                  <span class="relative inline-flex rounded-full h-2 w-2 bg-status-success"></span>
+                </span>
+                <span class="text-outline">RAG:</span>
+                <span class="text-on-surface font-medium font-label-sm">1.2s</span>
+                <span class="text-outline-variant">|</span>
+                <span class="text-outline">DocAI:</span>
+                <span class="text-on-surface font-medium font-label-sm">4.8s</span>
+                <span class="text-outline-variant">|</span>
+                <span class="text-status-warning font-semibold">AAL 3 "Eyes On" Active</span>
+              </div>
+            </div>
+
+            <!-- Chat & Workflow Stream -->
+            <div class="flex-1 overflow-y-auto p-space-lg space-y-space-lg" id="chat-stream-viewport">
+              <div class="flex items-center justify-center">
+                <span class="px-3 py-0.5 rounded-full bg-surface-elevated font-label-sm text-label-sm text-outline uppercase tracking-wider">Today, 10:14 AM EDT • Interceptor Event #941</span>
+              </div>
+
+              <!-- USER MESSAGE -->
+              <div class="flex items-start gap-space-md max-w-3xl ml-auto flex-row-reverse">
+                <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+                  <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+                </div>
+                <div class="flex flex-col items-end gap-1.5 max-w-xl">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">Elena Rostova</span>
+                    <span class="font-label-sm text-label-sm text-outline">10:14 AM</span>
+                  </div>
+                  <div class="p-space-md rounded-xl bg-surface-elevated text-on-surface shadow-md">
+                    <p class="font-body-md text-body-md mb-space-sm text-on-surface">Elena uploaded vendor bill for rapid OCR verification &amp; 3-way line item audit.</p>
+                    <div class="flex items-center gap-space-md p-space-sm rounded-lg bg-surface-base hover:bg-surface-container-high transition-colors cursor-pointer group">
+                      <div class="w-10 h-10 rounded bg-status-critical/15 text-status-critical flex items-center justify-center shrink-0 group-hover:scale-105 transition-transform">
+                        <span class="material-symbols-outlined text-[24px]">picture_as_pdf</span>
+                      </div>
+                      <div class="flex flex-col min-w-0 pr-space-md">
+                        <span class="font-body-sm text-body-sm font-semibold text-on-surface truncate group-hover:text-primary transition-colors">Invoice_Dell_PowerEdge_R750.pdf</span>
+                        <div class="flex items-center gap-2 mt-0.5">
+                          <span class="font-label-sm text-label-sm text-outline">2.4 MB</span>
+                          <span class="px-1.5 py-0.2 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm font-medium">Scanned OCR Ready</span>
+                        </div>
+                      </div>
+                      <span class="material-symbols-outlined text-outline group-hover:text-on-surface text-[18px] ml-auto shrink-0">download</span>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- AGENT MESSAGE & HITL INTERCEPTOR -->
+              <div class="flex items-start gap-space-md max-w-3xl mr-auto">
+                <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary via-primary-container to-secondary flex items-center justify-center shrink-0 shadow-[0_0_12px_rgba(77,142,255,0.35)]">
+                  <span class="material-symbols-outlined text-on-primary-container text-[18px]">neurology</span>
+                </div>
+                <div class="flex flex-col items-start gap-2 flex-1 min-w-0">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-sm text-label-sm text-primary font-semibold">NexusWork Autonomous Proxy</span>
+                    <span class="font-label-sm text-label-sm text-outline font-label-sm">spiffe://corp.internal/agents/nexuswork</span>
+                    <span class="font-label-sm text-label-sm text-outline">10:14:22 AM</span>
+                  </div>
+
+                  <div class="p-space-lg rounded-xl bg-surface-container-low text-on-surface shadow-md space-y-space-md w-full">
+                    <p class="font-body-md text-body-md leading-relaxed text-on-surface">
+                      Audited incoming document against <span class="text-primary font-medium">EMEA Procurement Guidelines v4.2</span> and matching PO record <span class="font-label-sm text-label-sm text-on-surface-variant font-medium">#PO-2026-9041</span>. Identified <strong class="text-status-warning font-semibold">2 policy exceptions</strong> and successfully parsed 3 line items. Total payable is <strong class="font-label-sm text-label-sm text-on-surface">$4,200.00</strong>.
+                    </p>
+                    <div class="flex flex-wrap items-center gap-1.5 pt-1">
+                      <span class="font-label-sm text-label-sm text-outline mr-1">RAG Grounding:</span>
+                      <button class="px-2 py-0.5 rounded bg-surface-elevated hover:bg-surface-variant text-primary font-label-sm text-label-sm flex items-center gap-1 transition-colors" onclick="switchTab('redline')">
+                        <span class="material-symbols-outlined text-[13px]">gavel</span>
+                        <span>[Policy §4.2: Max Meal &amp; Opex Limit]</span>
+                      </button>
+                      <button class="px-2 py-0.5 rounded bg-surface-elevated hover:bg-surface-variant text-status-warning font-label-sm text-label-sm flex items-center gap-1 transition-colors" onclick="switchTab('redline')">
+                        <span class="material-symbols-outlined text-[13px]">rule</span>
+                        <span>[Procurement §8.1: Payment Terms Net 30]</span>
+                      </button>
+                      <button class="px-2 py-0.5 rounded bg-surface-elevated hover:bg-surface-variant text-status-success font-label-sm text-label-sm flex items-center gap-1 transition-colors" onclick="switchTab('docai')">
+                        <span class="material-symbols-outlined text-[13px]">verified</span>
+                        <span>[DocAI: 95.8% Extracted Precision]</span>
+                      </button>
+                    </div>
+
+                    <!-- AAL 3 HUMAN-IN-THE-LOOP ACTION CARD -->
+                    <div class="relative overflow-hidden rounded-lg bg-surface-elevated/90 backdrop-blur-md p-space-md shadow-xl transition-all">
+                      <div class="absolute inset-0 bg-gradient-to-r from-status-warning/10 via-transparent to-status-warning/5 pointer-events-none"></div>
+                      <div class="relative flex items-start justify-between gap-space-md mb-space-md">
+                        <div class="flex items-center gap-space-sm">
+                          <div class="w-8 h-8 rounded bg-status-warning/20 text-status-warning flex items-center justify-center shrink-0">
+                            <span class="material-symbols-outlined text-[20px]">shield</span>
+                          </div>
+                          <div>
+                            <div class="flex items-center gap-1.5">
+                              <span class="font-headline-sm text-headline-sm font-semibold text-on-surface">AAL 3 Consequential Action Gatekeeper</span>
+                              <span class="px-1.5 py-0.5 rounded bg-status-warning/15 text-status-warning font-label-sm text-label-sm font-bold uppercase">HITL Active</span>
+                            </div>
+                            <p class="font-label-sm text-label-sm text-on-surface-variant mt-0.5">Authorization barrier enforced by Corporate Policy Engine v4.2</p>
+                          </div>
+                        </div>
+                        <span class="px-2.5 py-1 rounded-full bg-status-warning/15 text-status-warning font-label-sm text-label-sm font-medium shrink-0 flex items-center gap-1.5">
+                          <span class="w-1.5 h-1.5 rounded-full bg-status-warning animate-pulse"></span>
+                          <span>$4,200 &gt; $1,000 threshold &amp; conf 91.4%</span>
+                        </span>
+                      </div>
+
+                      <div class="relative rounded bg-surface-base p-space-sm mb-space-md space-y-1.5">
+                        <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+                          <span>Subtotal parsed (3 items)</span>
+                          <span class="text-on-surface font-medium font-label-md">$3,900.00</span>
+                        </div>
+                        <div class="flex items-center justify-between font-label-sm text-label-sm text-on-surface-variant">
+                          <span>Computed Tax (8.25% Jurisdictional)</span>
+                          <span class="text-on-surface font-medium font-label-md">$300.00</span>
+                        </div>
+                        <div class="h-px bg-surface-elevated my-1"></div>
+                        <div class="flex items-center justify-between font-label-sm text-label-sm">
+                          <span class="text-on-surface font-semibold">Total Authorizable Payable</span>
+                          <div class="flex items-center gap-2">
+                            <span class="px-1.5 py-0.5 rounded bg-status-success/20 text-status-success font-label-sm text-label-sm font-medium">[Verified Match ✓]</span>
+                            <span class="text-primary font-bold text-headline-sm font-label-md">$4,200.00</span>
+                          </div>
+                        </div>
+                      </div>
+
+                      <div class="relative rounded bg-status-critical/10 p-space-sm flex items-start gap-space-sm mb-space-md">
+                        <span class="material-symbols-outlined text-status-critical text-[18px] shrink-0 mt-0.5">warning</span>
+                        <div class="text-on-surface font-body-sm text-body-sm leading-tight">
+                          <strong class="text-status-critical font-semibold">Policy Breach #1:</strong> Payment terms specified as <span class="font-label-sm text-label-sm bg-status-critical/20 px-1 py-0.5 rounded text-on-surface font-semibold">Net 15</span>; company standard mandatory baseline requires <span class="font-label-sm text-label-sm bg-status-success/20 px-1 py-0.5 rounded text-on-surface font-semibold">Net 30 days</span>.
+                        </div>
+                      </div>
+
+                      <div class="relative flex items-center justify-between pt-1 gap-space-md">
+                        <div class="flex items-center gap-2">
+                          <button class="h-9 px-4 rounded bg-status-warning hover:bg-status-warning/90 active:scale-95 text-surface-base font-label-md text-label-md font-semibold flex items-center gap-2 shadow-lg transition-all" id="auth-ledger-btn" onclick="executeAuthorization()">
+                            <span class="material-symbols-outlined text-[17px]">lock</span>
+                            <span>Authorize &amp; Post to Ledger (OAuth Sign-off)</span>
+                          </button>
+                          <button class="h-9 px-3.5 rounded bg-surface-base hover:bg-surface-elevated active:scale-95 text-error font-label-md text-label-md flex items-center gap-1.5 transition-all" onclick="rejectAction()">
+                            <span class="material-symbols-outlined text-[17px]">undo</span>
+                            <span>Reject &amp; Rollback State</span>
+                          </button>
+                        </div>
+                        <span class="font-label-sm text-label-sm text-outline hidden xl:inline">SLA timeout: 18m:42s</span>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+              <div id="dynamic-log-insertion"></div>
+            </div>
+
+            <!-- BOTTOM ACTION INPUT BAR -->
+            <div class="p-space-md bg-surface-container-low shrink-0 shadow-lg">
+              <div class="rounded-xl bg-surface-base p-2 focus-within:ring-1 focus-within:ring-primary transition-all">
+                <div class="flex items-center justify-between px-space-xs pb-1.5 mb-1.5">
+                  <div class="flex items-center gap-1.5">
+                    <button class="px-2 py-1 rounded bg-surface-elevated hover:bg-surface-variant text-on-surface font-label-sm text-label-sm flex items-center gap-1.5 transition-colors">
+                      <span class="material-symbols-outlined text-primary text-[15px]">psychology</span>
+                      <span>Gemini 1.5 Pro (Enterprise Grounding)</span>
+                      <span class="material-symbols-outlined text-outline text-[14px]">expand_more</span>
+                    </button>
+                    <div class="h-3 w-px bg-surface-elevated"></div>
+                    <span class="font-label-sm text-label-sm text-outline flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+                      <span>Audit Context Attached (2 docs)</span>
+                    </span>
+                  </div>
+                  <div class="flex items-center gap-1">
+                    <button class="w-7 h-7 rounded hover:bg-surface-elevated text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Attach Document">
+                      <span class="material-symbols-outlined text-[18px]">attach_file</span>
+                    </button>
+                    <button class="w-7 h-7 rounded hover:bg-surface-elevated text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Voice Input">
+                      <span class="material-symbols-outlined text-[18px]">mic</span>
+                    </button>
+                  </div>
+                </div>
+                <div class="flex items-center gap-space-sm px-space-xs">
+                  <input class="flex-1 bg-transparent text-on-surface placeholder:text-outline font-body-md text-body-md focus:outline-none" id="chat-prompt-input" placeholder="Ask policy questions, audit documents, or instruct proxy..." type="text"/>
+                  <button class="h-8 px-4 rounded-lg bg-primary-container hover:bg-primary-container/90 active:scale-95 text-on-primary-container font-label-md text-label-md font-semibold flex items-center gap-1.5 shadow-[0_0_12px_rgba(77,142,255,0.4)] transition-all shrink-0" onclick="handlePromptSubmit()">
+                    <span>Send</span>
+                    <span class="material-symbols-outlined text-[15px]">arrow_upward</span>
+                  </button>
+                </div>
+              </div>
+              <div class="flex items-center justify-between px-space-xs pt-1.5 text-outline font-label-sm text-label-sm">
+                <span>Enterprise Proxy: SOC2 Type II, HIPAA, ISO 27001 Certified Environment</span>
+                <span>Press ↵ to submit • Esc to cancel</span>
+              </div>
+            </div>
+          </section>
+
+          <!-- ==================== RIGHT DYNAMIC CANVAS (540PX) ==================== -->
+          <aside class="w-[540px] flex flex-col bg-surface-container-lowest shrink-0 overflow-hidden shadow-2xl">
+            <div class="h-12 bg-surface-container-low px-space-sm flex items-center justify-between shrink-0">
+              <div class="flex items-center gap-1">
+                <button class="relative px-3 py-2 rounded font-label-sm text-label-sm flex items-center gap-1.5 text-primary font-semibold bg-surface-elevated transition-colors" id="tab-btn-docai" onclick="switchTab('docai')">
+                  <span class="material-symbols-outlined text-[16px]">document_scanner</span>
+                  <span>DocAI Preview</span>
+                  <span class="px-1.5 py-0.2 rounded bg-primary/20 text-primary font-label-sm text-label-sm font-semibold">95%</span>
+                  <span class="absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full shadow-[0_0_8px_#4d8eff]" id="tab-indicator-docai"></span>
+                </button>
+                <button class="relative px-3 py-2 rounded font-label-sm text-label-sm flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface transition-colors" id="tab-btn-redline" onclick="switchTab('redline')">
+                  <span class="material-symbols-outlined text-[16px]">difference</span>
+                  <span>Redline Diff</span>
+                  <span class="px-1.5 py-0.2 rounded bg-status-critical/20 text-status-critical font-label-sm text-label-sm font-semibold">2 Flags</span>
+                  <span class="hidden absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full shadow-[0_0_8px_#4d8eff]" id="tab-indicator-redline"></span>
+                </button>
+                <button class="relative px-3 py-2 rounded font-label-sm text-label-sm flex items-center gap-1.5 text-on-surface-variant hover:text-on-surface transition-colors" id="tab-btn-artifacts" onclick="switchTab('artifacts')">
+                  <span class="material-symbols-outlined text-[16px]">table_chart</span>
+                  <span>Ledger</span>
+                  <span class="flex items-center gap-1 px-1.5 py-0.2 rounded bg-status-success/20 text-status-success font-label-sm text-label-sm font-semibold">
+                    <span class="w-1.5 h-1.5 rounded-full bg-status-success animate-ping"></span>
+                    <span>Live</span>
+                  </span>
+                  <span class="hidden absolute bottom-0 left-2 right-2 h-0.5 bg-primary rounded-full shadow-[0_0_8px_#4d8eff]" id="tab-indicator-artifacts"></span>
+                </button>
+              </div>
+              <div class="flex items-center gap-1">
+                <button class="w-7 h-7 rounded hover:bg-surface-elevated text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Zoom in">
+                  <span class="material-symbols-outlined text-[17px]">zoom_in</span>
+                </button>
+                <button class="w-7 h-7 rounded hover:bg-surface-elevated text-on-surface-variant hover:text-on-surface flex items-center justify-center transition-colors" title="Popout Panel">
+                  <span class="material-symbols-outlined text-[17px]">open_in_new</span>
+                </button>
+              </div>
+            </div>
+
+            <div class="flex-1 overflow-y-auto p-space-md space-y-space-md">
+              <!-- TAB 1: DOCUMENT AI PREVIEW -->
+              <div class="space-y-space-md" id="view-docai">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="font-label-sm text-label-sm text-outline uppercase font-semibold tracking-wider">Scanned Document Overlay</span>
+                    <span class="px-2 py-0.5 rounded bg-surface-elevated text-on-surface-variant font-label-sm text-label-sm">Page 1 of 1</span>
+                  </div>
+                  <div class="flex items-center gap-2 font-label-sm text-label-sm text-status-success">
+                    <span class="material-symbols-outlined text-[15px]">verified_user</span>
+                    <span>Pixel OCR Validated</span>
+                  </div>
+                </div>
+
+                <div class="relative w-full rounded-xl bg-surface-elevated p-5 shadow-2xl text-on-surface select-none overflow-hidden">
+                  <div class="absolute right-4 top-4 text-outline font-label-sm text-[10px] uppercase tracking-widest pointer-events-none">CONFIDENTIAL // AP AUDIT DRAFT</div>
+                  <div class="flex items-start justify-between pb-4 mb-4">
+                    <div>
+                      <span class="font-headline-sm text-headline-sm font-bold tracking-tight text-on-surface">INVOICE • SERVICES AGREEMENT</span>
+                      <p class="font-label-sm text-label-sm text-outline mt-0.5">Initech EMEA Enterprise Solutions GmbH</p>
+                      <p class="font-label-sm text-label-sm text-on-surface-variant">Tax ID: DE892019284 • Dun &amp; Bradstreet: 98-441-2091</p>
+                    </div>
+                    <div class="text-right">
+                      <span class="font-label-sm text-label-sm text-outline block">Invoice Number</span>
+                      <span class="font-label-md text-label-md font-bold text-on-surface">#INV-2026-88</span>
+                      <span class="font-label-sm text-label-sm text-outline block mt-1">Date: Feb 26, 2026</span>
+                    </div>
+                  </div>
+
+                  <div class="relative p-2.5 rounded bg-status-success/5 shadow-[0_0_12px_rgba(16,185,129,0.15)] mb-4">
+                    <div class="flex items-center justify-between">
+                      <div>
+                        <span class="font-label-sm text-label-sm text-outline block uppercase">Remit To Vendor</span>
+                        <span class="font-body-md text-body-md font-semibold text-on-surface">Initech Corp (EMEA Cloud Division)</span>
+                      </div>
+                      <div class="px-2 py-0.5 rounded bg-status-success/20 text-status-success font-label-sm text-label-sm font-bold flex items-center gap-1 shrink-0">
+                        <span class="material-symbols-outlined text-[14px]">check_circle</span>
+                        <span>Verified Supplier #8841</span>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div class="mb-4">
+                    <table class="w-full text-left font-label-sm text-label-sm">
+                      <thead>
+                        <tr class="text-outline">
+                          <th class="py-1">Description</th>
+                          <th class="py-1 text-center">Qty</th>
+                          <th class="py-1 text-right">Unit Price</th>
+                          <th class="py-1 text-right">Amount</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-surface-base text-on-surface">
+                        <tr>
+                          <td class="py-1.5 font-medium">PowerEdge R750 Rack Server Setup</td>
+                          <td class="py-1.5 text-center">1</td>
+                          <td class="py-1.5 text-right">$2,400.00</td>
+                          <td class="py-1.5 text-right font-medium">$2,400.00</td>
+                        </tr>
+                        <tr>
+                          <td class="py-1.5 font-medium">Enterprise Hypervisor Provisioning</td>
+                          <td class="py-1.5 text-center">3</td>
+                          <td class="py-1.5 text-right">$350.00</td>
+                          <td class="py-1.5 text-right font-medium">$1,050.00</td>
+                        </tr>
+                        <tr>
+                          <td class="py-1.5 font-medium">Critical 24/7 SLA SLA-Level 1 (March)</td>
+                          <td class="py-1.5 text-center">1</td>
+                          <td class="py-1.5 text-right">$450.00</td>
+                          <td class="py-1.5 text-right font-medium">$450.00</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="grid grid-cols-2 gap-3 pt-2">
+                    <div class="relative p-2.5 rounded bg-status-warning/10 shadow-[0_0_14px_rgba(245,158,11,0.2)]">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="font-label-sm text-label-sm text-outline font-semibold uppercase">Contract Terms</span>
+                        <span class="px-1.5 py-0.2 rounded bg-status-warning/20 text-status-warning font-label-sm text-label-sm font-semibold">99% Conf</span>
+                      </div>
+                      <div class="text-headline-sm font-headline-sm font-bold text-status-warning flex items-center gap-1.5">
+                        <span class="material-symbols-outlined text-[17px]">error</span>
+                        <span>Net 15 Days</span>
+                      </div>
+                      <span class="font-label-sm text-label-sm text-status-critical font-medium block mt-1">
+                        Policy Violation §8.1 (Requires Net 30)
+                      </span>
+                    </div>
+
+                    <div class="relative p-2.5 rounded bg-primary-container/10 shadow-[0_0_14px_rgba(77,142,255,0.2)] text-right">
+                      <div class="flex items-center justify-between mb-1">
+                        <span class="px-1.5 py-0.2 rounded bg-primary-container/20 text-primary font-label-sm text-label-sm font-semibold">98% Conf</span>
+                        <span class="font-label-sm text-label-sm text-outline font-semibold uppercase">Final Payable</span>
+                      </div>
+                      <div class="text-headline-md font-headline-md font-bold text-primary font-label-md">
+                        $4,200.00
+                      </div>
+                      <span class="font-label-sm text-label-sm text-status-warning font-semibold block mt-1">
+                        [HITL Sign-Off Required]
+                      </span>
+                    </div>
+                  </div>
+
+                  <div class="mt-4 pt-3 flex items-center justify-between text-outline font-label-sm text-label-sm">
+                    <div class="flex items-center gap-2">
+                      <span class="material-symbols-outlined text-[18px] text-status-success">draw</span>
+                      <span>Vendor Signatory: Marcus Vance (VP Logistics)</span>
+                    </div>
+                    <span>Hash: sha256:d8b2e1...8f0</span>
+                  </div>
+                </div>
+
+                <div class="rounded-xl bg-surface-elevated p-space-md shadow-md space-y-space-sm">
+                  <span class="font-label-sm text-label-sm text-outline uppercase font-semibold tracking-wider">Field Precision Diagnostics</span>
+                  <div class="space-y-2 pt-1 font-label-sm text-label-sm">
+                    <div>
+                      <div class="flex justify-between mb-1 text-on-surface-variant">
+                        <span>Vendor DUNS &amp; Banking Routing</span>
+                        <span class="text-status-success font-medium">99.4% Accuracy</span>
+                      </div>
+                      <div class="h-1.5 w-full bg-surface-base rounded-full overflow-hidden">
+                        <div class="h-full bg-status-success rounded-full" style="width: 99.4%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between mb-1 text-on-surface-variant">
+                        <span>Invoice Number &amp; Line Items Subtotal</span>
+                        <span class="text-primary font-medium">98.1% Accuracy</span>
+                      </div>
+                      <div class="h-1.5 w-full bg-surface-base rounded-full overflow-hidden">
+                        <div class="h-full bg-primary rounded-full" style="width: 98.1%"></div>
+                      </div>
+                    </div>
+                    <div>
+                      <div class="flex justify-between mb-1 text-on-surface-variant">
+                        <span>Payment Terms Clause (Net 15 extract)</span>
+                        <span class="text-status-warning font-medium">91.4% Accuracy</span>
+                      </div>
+                      <div class="h-1.5 w-full bg-surface-base rounded-full overflow-hidden">
+                        <div class="h-full bg-status-warning rounded-full" style="width: 91.4%"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- TAB 2: COMPLIANCE REDLINE DIFF -->
+              <div class="hidden space-y-space-md" id="view-redline">
+                <div class="flex items-center justify-between">
+                  <div>
+                    <span class="font-headline-sm text-headline-sm font-semibold text-on-surface">Automated Contract Redline</span>
+                    <p class="font-label-sm text-label-sm text-on-surface-variant">Synthesized counter-clause generated by NexusWork Legal Grounding</p>
+                  </div>
+                  <span class="px-2 py-0.5 rounded bg-status-warning/15 text-status-warning font-label-sm text-label-sm font-semibold">2 Exceptions</span>
+                </div>
+
+                <div class="rounded-xl bg-surface-elevated overflow-hidden shadow-xl">
+                  <div class="px-space-md py-2 bg-surface-base flex items-center justify-between font-label-sm text-label-sm">
+                    <span class="text-outline font-semibold">Section 8.1 - Payment &amp; Remittance Schedule</span>
+                    <span class="text-primary font-medium">Diff View: Proposed Amendment</span>
+                  </div>
+                  <div class="p-space-md space-y-3 font-body-sm text-body-sm">
+                    <div class="p-space-sm rounded bg-status-critical/10 text-on-surface">
+                      <div class="flex items-center gap-1.5 font-label-sm text-label-sm text-status-critical font-bold mb-1">
+                        <span class="material-symbols-outlined text-[15px]">remove_circle</span>
+                        <span>[-] Original Vendor Clause:</span>
+                      </div>
+                      <p class="line-through text-on-surface-variant">
+                        “Payment shall be made within 15 calendar days from receipt of invoice. Late penalties of 2.5% per month apply thereafter.”
+                      </p>
+                    </div>
+                    <div class="p-space-sm rounded bg-status-success/10 text-on-surface">
+                      <div class="flex items-center gap-1.5 font-label-sm text-label-sm text-status-success font-bold mb-1">
+                        <span class="material-symbols-outlined text-[15px]">add_circle</span>
+                        <span>[+] NexusWork Enterprise Replacement Clause:</span>
+                      </div>
+                      <p class="text-on-surface font-medium">
+                        “Payment shall be made within 30 calendar days pursuant to Global Procurement Policy §8.1. Initech Corp agrees to waive recurring finance surcharges pending standard reconciliation.”
+                      </p>
+                    </div>
+                  </div>
+                  <div class="p-space-sm bg-surface-base flex items-center justify-between">
+                    <span class="font-label-sm text-label-sm text-outline">Ready for docu-sign or vendor counter-dispatch</span>
+                    <button class="h-8 px-3.5 rounded bg-primary-container hover:bg-primary-container/90 text-on-primary-container font-label-sm text-label-sm font-semibold flex items-center gap-1.5 shadow transition-all" onclick="applyRedline()">
+                      <span class="material-symbols-outlined text-[16px]">done_all</span>
+                      <span>Apply Approved Redline Draft</span>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="rounded-xl bg-surface-elevated p-space-md shadow-md space-y-2">
+                  <div class="flex items-center justify-between">
+                    <span class="font-label-sm text-label-sm text-status-warning font-semibold flex items-center gap-1">
+                      <span class="material-symbols-outlined text-[16px]">info</span>
+                      <span>Flag #2: Opex Category Allocation</span>
+                    </span>
+                    <span class="font-label-sm text-label-sm text-outline">Policy §4.2</span>
+                  </div>
+                  <p class="font-body-sm text-body-sm text-on-surface-variant">
+                    The line item "Critical 24/7 SLA-Level 1" ($450.00) requires attribution to Software Maintenance (Cost Center 410) rather than Hardware Capex (Cost Center 204). Auto-reclassification completed.
+                  </p>
+                </div>
+              </div>
+
+              <!-- TAB 3: LIVE WORKSPACE ARTIFACTS -->
+              <div class="hidden space-y-space-md" id="view-artifacts">
+                <div class="flex items-center justify-between">
+                  <div class="flex items-center gap-2">
+                    <span class="font-headline-sm text-headline-sm font-semibold text-on-surface">AP General Ledger Sync</span>
+                    <span class="px-2 py-0.5 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm font-semibold flex items-center gap-1">
+                      <span class="w-1.5 h-1.5 rounded-full bg-status-success"></span>
+                      <span>AlloyDB Hot-Sync</span>
+                    </span>
+                  </div>
+                  <button class="h-7 px-2.5 rounded bg-surface-elevated hover:bg-surface-variant text-on-surface font-label-sm text-label-sm flex items-center gap-1 transition-colors">
+                    <span class="material-symbols-outlined text-[14px]">refresh</span>
+                    <span>Sync Now</span>
+                  </button>
+                </div>
+
+                <div class="rounded-xl bg-surface-elevated overflow-hidden shadow-xl">
+                  <div class="overflow-x-auto">
+                    <table class="w-full text-left font-label-sm text-label-sm whitespace-nowrap">
+                      <thead class="bg-surface-base text-outline uppercase font-semibold">
+                        <tr>
+                          <th class="py-2.5 px-3">Timestamp</th>
+                          <th class="py-2.5 px-3">Vendor</th>
+                          <th class="py-2.5 px-3">Invoice #</th>
+                          <th class="py-2.5 px-3 text-right">Amount</th>
+                          <th class="py-2.5 px-3 text-center">Conf</th>
+                          <th class="py-2.5 px-3">Status</th>
+                          <th class="py-2.5 px-3">Approver</th>
+                        </tr>
+                      </thead>
+                      <tbody class="divide-y divide-surface-base text-on-surface" id="ledger-table-body">
+                        <tr class="hover:bg-surface-container-high transition-colors bg-status-warning/5" id="ledger-row-104">
+                          <td class="py-2.5 px-3 text-on-surface-variant font-label-sm">10:14:22</td>
+                          <td class="py-2.5 px-3 font-medium text-on-surface">Initech Corp</td>
+                          <td class="py-2.5 px-3 text-primary font-label-sm">#INV-2026-88</td>
+                          <td class="py-2.5 px-3 text-right font-semibold font-label-sm">$4,200.00</td>
+                          <td class="py-2.5 px-3 text-center text-status-warning">91.4%</td>
+                          <td class="py-2.5 px-3" id="ledger-status-cell">
+                            <span class="px-2 py-0.5 rounded bg-status-warning/15 text-status-warning font-label-sm text-label-sm font-semibold">PENDING_APPROVAL</span>
+                          </td>
+                          <td class="py-2.5 px-3 text-on-surface-variant">Elena Rostova</td>
+                        </tr>
+                        <tr class="hover:bg-surface-container-high transition-colors">
+                          <td class="py-2.5 px-3 text-on-surface-variant font-label-sm">09:42:10</td>
+                          <td class="py-2.5 px-3 font-medium text-on-surface">AWS Cloud EMEA</td>
+                          <td class="py-2.5 px-3 text-primary font-label-sm">#AWS-9912</td>
+                          <td class="py-2.5 px-3 text-right font-semibold font-label-sm">$14,820.00</td>
+                          <td class="py-2.5 px-3 text-center text-status-success">99.8%</td>
+                          <td class="py-2.5 px-3">
+                            <span class="px-2 py-0.5 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm font-semibold">AUTO_APPROVED</span>
+                          </td>
+                          <td class="py-2.5 px-3 text-on-surface-variant">Autonomous Proxy</td>
+                        </tr>
+                        <tr class="hover:bg-surface-container-high transition-colors">
+                          <td class="py-2.5 px-3 text-on-surface-variant font-label-sm">08:15:02</td>
+                          <td class="py-2.5 px-3 font-medium text-on-surface">Datadog Inc</td>
+                          <td class="py-2.5 px-3 text-primary font-label-sm">#DD-29188</td>
+                          <td class="py-2.5 px-3 text-right font-semibold font-label-sm">$3,120.00</td>
+                          <td class="py-2.5 px-3 text-center text-status-success">98.5%</td>
+                          <td class="py-2.5 px-3">
+                            <span class="px-2 py-0.5 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm font-semibold">AUTO_APPROVED</span>
+                          </td>
+                          <td class="py-2.5 px-3 text-on-surface-variant">Autonomous Proxy</td>
+                        </tr>
+                        <tr class="hover:bg-surface-container-high transition-colors">
+                          <td class="py-2.5 px-3 text-on-surface-variant font-label-sm">Yesterday</td>
+                          <td class="py-2.5 px-3 font-medium text-on-surface">Slack Technologies</td>
+                          <td class="py-2.5 px-3 text-primary font-label-sm">#SLK-4421</td>
+                          <td class="py-2.5 px-3 text-right font-semibold font-label-sm">$950.00</td>
+                          <td class="py-2.5 px-3 text-center text-status-success">99.2%</td>
+                          <td class="py-2.5 px-3">
+                            <span class="px-2 py-0.5 rounded bg-status-success/15 text-status-success font-label-sm text-label-sm font-semibold">AUTO_APPROVED</span>
+                          </td>
+                          <td class="py-2.5 px-3 text-on-surface-variant">Autonomous Proxy</td>
+                        </tr>
+                      </tbody>
+                    </table>
+                  </div>
+
+                  <div class="px-space-md py-space-sm bg-surface-base flex items-center justify-between font-label-sm text-label-sm text-outline">
+                    <span>Showing 4 of 1,280 transactions</span>
+                    <div class="flex items-center gap-3">
+                      <span>Total 24h: <strong class="text-on-surface">$23,090.00</strong></span>
+                      <span class="text-status-success font-semibold">Sync: 100% Consistent</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div class="p-space-md rounded-xl bg-surface-elevated space-y-2">
+                  <span class="font-label-sm text-label-sm text-outline uppercase font-semibold">Cryptographic Trail</span>
+                  <div class="p-space-sm rounded bg-surface-base font-label-sm text-label-sm text-on-surface-variant space-y-1">
+                    <div><span class="text-outline">Key Authority:</span> <span class="text-on-surface">KMS-HSM-Vault-East</span></div>
+                    <div><span class="text-outline">Attestation:</span> <span class="text-on-surface">mTLS SPIFFE / SAN X.509 Compliant</span></div>
+                    <div><span class="text-outline">AlloyDB WAL Pos:</span> <span class="text-primary">0/34A29B0</span></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div class="p-space-sm bg-surface-container-low shrink-0 flex items-center justify-between font-label-sm text-label-sm text-outline">
+              <div class="flex items-center gap-1.5">
+                <span class="material-symbols-outlined text-[15px] text-primary">visibility</span>
+                <span>Dual-Engine Verification</span>
+              </div>
+              <span>Render Time: 18ms</span>
+            </div>
+          </aside>
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function switchTab(tabId) {
+      const tabs = ['docai', 'redline', 'artifacts'];
+      tabs.forEach(t => {
+        const viewEl = document.getElementById('view-' + t);
+        const btnEl = document.getElementById('tab-btn-' + t);
+        const indEl = document.getElementById('tab-indicator-' + t);
+        
+        if (t === tabId) {
+          if (viewEl) viewEl.classList.remove('hidden');
+          if (btnEl) {
+            btnEl.classList.add('text-primary', 'font-semibold', 'bg-surface-elevated');
+            btnEl.classList.remove('text-on-surface-variant');
+          }
+          if (indEl) indEl.classList.remove('hidden');
+        } else {
+          if (viewEl) viewEl.classList.add('hidden');
+          if (btnEl) {
+            btnEl.classList.remove('text-primary', 'font-semibold', 'bg-surface-elevated');
+            btnEl.classList.add('text-on-surface-variant');
+          }
+          if (indEl) indEl.classList.add('hidden');
+        }
+      });
+    }
+
+    function executeAuthorization() {
+      const authBtn = document.getElementById('auth-ledger-btn');
+      if (!authBtn) return;
+      
+      authBtn.innerHTML = '<span class="material-symbols-outlined text-[17px] animate-spin">progress_activity</span> Signing & Posting...';
+      authBtn.classList.add('opacity-75', 'cursor-not-allowed');
+
+      setTimeout(() => {
+        authBtn.innerHTML = '<span class="material-symbols-outlined text-[17px]">verified</span> Authorized & Posted (Tx #8942)';
+        authBtn.classList.remove('bg-status-warning', 'text-surface-base');
+        authBtn.classList.add('bg-status-success', 'text-on-surface');
+
+        const statusCell = document.getElementById('ledger-status-cell');
+        if (statusCell) {
+          statusCell.innerHTML = '<span class="px-2 py-0.5 rounded bg-status-success/20 text-status-success font-label-sm text-label-sm font-semibold">AUTHORIZED_OAUTH</span>';
+        }
+
+        const insertion = document.getElementById('dynamic-log-insertion');
+        if (insertion) {
+          const bubble = document.createElement('div');
+          bubble.className = "flex items-start gap-space-md max-w-3xl mr-auto animate-fade-in";
+          bubble.innerHTML = `
+            <div class="w-8 h-8 rounded-lg bg-status-success flex items-center justify-center shrink-0 shadow-md">
+              <span class="material-symbols-outlined text-surface-base text-[18px]">verified</span>
+            </div>
+            <div class="flex flex-col items-start gap-1 flex-1">
+              <div class="flex items-center gap-2">
+                <span class="font-label-sm text-label-sm text-status-success font-semibold">Ledger Entry Committed</span>
+                <span class="font-label-sm text-label-sm text-outline">Just now</span>
+              </div>
+              <div class="p-space-md rounded-xl bg-surface-container-low text-on-surface shadow-md w-full">
+                <p class="font-body-md text-body-md text-on-surface">
+                  <strong>Transaction #INV-2026-88 authorized</strong> by Elena Rostova. OAuth token verification successful. Dispatched payment voucher to AlloyDB AP Ledger for disbursement under Net 30 terms.
+                </p>
+              </div>
+            </div>
+          `;
+          insertion.appendChild(bubble);
+
+          const viewport = document.getElementById('chat-stream-viewport');
+          if (viewport) viewport.scrollTop = viewport.scrollHeight;
+        }
+      }, 1100);
+    }
+
+    function rejectAction() {
+      alert("Authorization rejected. Contract state rolled back. Vendor notified of Net 15 non-compliance.");
+    }
+
+    function applyRedline() {
+      alert("Approved Redline Draft applied! Replacement contract draft exported to Legal Workspace.");
+      switchTab('docai');
+    }
+
+    function handlePromptSubmit() {
+      const input = document.getElementById('chat-prompt-input');
+      if (!input || !input.value.trim()) return;
+
+      const val = input.value.trim();
+      input.value = '';
+
+      const insertion = document.getElementById('dynamic-log-insertion');
+      if (insertion) {
+        const userBubble = document.createElement('div');
+        userBubble.className = "flex items-start gap-space-md max-w-3xl ml-auto flex-row-reverse";
+        userBubble.innerHTML = `
+          <div class="w-8 h-8 rounded-full bg-primary flex items-center justify-center shrink-0 shadow-md">
+            <span class="material-symbols-outlined text-on-primary text-[18px]">person</span>
+          </div>
+          <div class="p-space-md rounded-xl bg-surface-elevated text-on-surface shadow-md">
+            <p class="font-body-md text-body-md text-on-surface">${val}</p>
+          </div>
+        `;
+        insertion.appendChild(userBubble);
+
+        setTimeout(() => {
+          const agentBubble = document.createElement('div');
+          agentBubble.className = "flex items-start gap-space-md max-w-3xl mr-auto";
+          agentBubble.innerHTML = `
+            <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-primary to-secondary flex items-center justify-center shrink-0">
+              <span class="material-symbols-outlined text-on-primary-container text-[18px]">neurology</span>
+            </div>
+            <div class="p-space-md rounded-xl bg-surface-container-low text-on-surface shadow-md">
+              <p class="font-body-md text-body-md text-on-surface">Cross-referenced "${val}" against active RAG stores. All matching clauses adhere to Corporate Procurement standards.</p>
+            </div>
+          `;
+          insertion.appendChild(agentBubble);
+
+          const viewport = document.getElementById('chat-stream-viewport');
+          if (viewport) viewport.scrollTop = viewport.scrollHeight;
+        }, 700);
+      }
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const promptInput = document.getElementById('chat-prompt-input');
+      if (promptInput) {
+        promptInput.addEventListener('keydown', (e) => {
+          if (e.key === 'Enter' && !e.shiftKey) {
+            e.preventDefault();
+            handlePromptSubmit();
+          }
+        });
+      }
+    });
+  </script>
+</body>
+</html>
