@@ -1,17 +1,6 @@
 "use client";
 
 import { motion } from "framer-motion";
-import {
-  ShieldAlert,
-  CheckCircle2,
-  XCircle,
-  Lock,
-  ArrowRight,
-  RotateCcw,
-  AlertTriangle,
-  KeyRound,
-  FileSpreadsheet,
-} from "lucide-react";
 import { useEKAStore } from "@/store/eka-store";
 
 export function HITLActionCard() {
@@ -20,7 +9,6 @@ export function HITLActionCard() {
 
   const handleAuthorize = () => {
     authorizeHITL();
-    // Switch canvas to artifacts tab to see live sheet row insertion
     setCanvasTab("artifacts");
     setArtifactSubTab("sheets");
   };
@@ -30,160 +18,128 @@ export function HITLActionCard() {
       initial={{ opacity: 0, scale: 0.98, y: 10 }}
       animate={{ opacity: 1, scale: 1, y: 0 }}
       transition={{ duration: 0.3 }}
-      className={`p-4 rounded-xl border transition-all my-3 ${
+      className={`rounded border p-5 relative overflow-hidden flex flex-col gap-4 my-3 transition-all ${
         hitlDecision === "AUTHORIZED"
-          ? "bg-emerald-950/20 border-emerald-500/40 shadow-lg shadow-emerald-950/20"
+          ? "border-emerald-800/50 bg-obsidian text-executive-primary"
           : hitlDecision === "REJECTED"
-          ? "bg-rose-950/20 border-rose-500/40 shadow-lg shadow-rose-950/20"
-          : "bg-amber-950/20 border-amber-500/50 shadow-lg shadow-amber-950/30"
+          ? "border-red-800/50 bg-obsidian text-executive-primary"
+          : "border-amber-800/50 bg-obsidian text-executive-primary"
       }`}
     >
       {/* Header */}
       <div className="flex items-start justify-between gap-3">
-        <div className="flex items-center gap-2">
-          <div
-            className={`w-8 h-8 rounded-lg flex items-center justify-center ${
-              hitlDecision === "AUTHORIZED"
-                ? "bg-emerald-500/20 text-emerald-400 border border-emerald-500/30"
-                : hitlDecision === "REJECTED"
-                ? "bg-rose-500/20 text-rose-400 border border-rose-500/30"
-                : "bg-amber-500/20 text-amber-400 border border-amber-500/30"
-            }`}
-          >
-            {hitlDecision === "AUTHORIZED" ? (
-              <CheckCircle2 className="w-4 h-4" />
-            ) : hitlDecision === "REJECTED" ? (
-              <XCircle className="w-4 h-4" />
-            ) : (
-              <ShieldAlert className="w-4 h-4" />
-            )}
+        <div className="flex flex-col gap-0.5">
+          <div className="text-[13px] font-medium text-white flex items-center gap-2">
+            <span
+              className={`w-1.5 h-1.5 rounded-full ${
+                hitlDecision === "AUTHORIZED"
+                  ? "bg-emerald-400"
+                  : hitlDecision === "REJECTED"
+                  ? "bg-red-400"
+                  : "bg-amber-400"
+              }`}
+            />
+            <span>AAL 3 Consequential Action Gatekeeper</span>
           </div>
-          <div>
-            <h4 className="text-xs font-bold text-slate-100 flex items-center gap-1.5">
-              <span>AAL 3 Consequential Action Gatekeeper</span>
-              <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 border border-amber-500/30">
-                Eyes-On Tier
-              </span>
-            </h4>
-            <p className="text-[11px] text-slate-400">
-              Deterministic governance policy prevented autonomous execution
-            </p>
+          <div className="text-[10px] text-executive-dim font-mono">
+            Deterministic Safety Circuit • Human Authorization Required
           </div>
         </div>
 
-        {/* Status Pill */}
         <span
-          className={`text-[10px] font-mono font-semibold uppercase px-2.5 py-1 rounded-full border ${
+          className={`px-2 py-0.5 rounded border font-mono text-[9px] uppercase tracking-widest ${
             hitlDecision === "AUTHORIZED"
-              ? "bg-emerald-500/20 text-emerald-300 border-emerald-500/30"
+              ? "border-emerald-800/50 text-emerald-300 bg-emerald-950/20"
               : hitlDecision === "REJECTED"
-              ? "bg-rose-500/20 text-rose-300 border-rose-500/30"
-              : "bg-amber-500/20 text-amber-300 border-amber-500/40 animate-pulse"
+              ? "border-red-800/50 text-red-300 bg-red-950/20"
+              : "border-amber-800/50 text-amber-300 bg-amber-950/20 animate-pulse"
           }`}
         >
           {hitlDecision === "AUTHORIZED"
-            ? "AUTHORIZED & COMMITTED"
+            ? "COMMITTED"
             : hitlDecision === "REJECTED"
-            ? "REJECTED & ROLLED BACK"
-            : "EXECUTION PAUSED: $4,200.00"}
+            ? "ROLLED BACK"
+            : "HITL HOLD"}
         </span>
       </div>
 
-      {/* Exception Reason Box */}
-      {hitlDecision === "PENDING_REVIEW" && (
-        <div className="mt-3 p-2.5 rounded-lg bg-amber-950/30 border border-amber-500/30 text-[11px] text-amber-200/90 leading-snug">
-          <span className="font-semibold text-amber-300">Policy Trigger Reason:</span>{" "}
-          Invoice amount ($4,200.00) exceeds $1,000.00 auto-processing threshold, and entity extraction confidence is 91% (&lt; 95% requirement).
+      {/* Description */}
+      <div className="text-[12px] text-executive-muted leading-relaxed font-sans">
+        Invoice total of <span className="text-white font-medium font-mono">$4,200.00</span> exceeds autonomous commit boundary threshold (<span className="text-executive-dim font-mono">$1,000.00</span>) and requires discretionary signing.
+      </div>
+
+      {/* Deterministic Validation Matrix */}
+      <div className="rounded border border-obsidian-border bg-obsidian-subtle p-3.5 font-mono text-[11px]">
+        <div className="text-[9px] uppercase tracking-wider text-executive-dim mb-2 flex justify-between items-center">
+          <span>Deterministic Validation Matrix (Python Decimal)</span>
+          <span className="text-executive-dim">SAP Ledger Match</span>
+        </div>
+        <div className="flex items-center justify-between text-executive-muted py-0.5">
+          <span>Dell PowerEdge R750 + Rail Kit</span>
+          <span className="text-white font-mono">$3,900.00</span>
+        </div>
+        <div className="flex items-center justify-between text-executive-muted py-0.5">
+          <span>Statutory VAT (7.692%)</span>
+          <span className="text-white font-mono">$300.00</span>
+        </div>
+        <div className="h-px bg-obsidian-border my-2" />
+        <div className="flex items-center justify-between font-medium text-[12px]">
+          <span className="text-white">Gross Verified Total</span>
+          <div className="flex items-center gap-2">
+            <span className="text-white font-mono">$4,200.00</span>
+            <span className="text-emerald-400 text-[10px]">✓ OK</span>
+          </div>
+        </div>
+      </div>
+
+      {/* Clause Exception Notice */}
+      <div className="p-2.5 rounded border border-amber-900/40 bg-obsidian-subtle text-[11px] text-amber-200/90 font-mono flex items-center gap-2">
+        <span className="material-symbols-outlined text-[14px] text-amber-400">info</span>
+        <span>Clause Exception §8.1: Counter-draft prepared in redline view.</span>
+      </div>
+
+      {/* Decision Buttons & Status */}
+      {hitlDecision === "PENDING_REVIEW" ? (
+        <div className="flex items-center gap-3 pt-1">
+          <button
+            onClick={handleAuthorize}
+            id="authorize-hitl-btn"
+            className="flex-1 py-2 px-4 rounded bg-white hover:bg-executive-primary text-obsidian font-medium text-[12px] flex items-center justify-center gap-2 transition-all cursor-pointer shadow-sm active:scale-[0.99]"
+          >
+            <span className="material-symbols-outlined text-[15px]">key</span>
+            <span>Authorize & Commit with Spiffe ID</span>
+          </button>
+          <button
+            onClick={rejectHITL}
+            id="rollback-hitl-btn"
+            className="py-2 px-4 rounded border border-obsidian-border hover:bg-obsidian-panel text-executive-muted hover:text-white font-medium text-[12px] flex items-center justify-center gap-1.5 transition-all cursor-pointer"
+          >
+            <span className="material-symbols-outlined text-[14px]">close</span>
+            <span>Reject & Rollback</span>
+          </button>
+        </div>
+      ) : hitlDecision === "AUTHORIZED" ? (
+        <div className="p-2.5 rounded border border-emerald-800/40 bg-emerald-950/20 font-mono text-[11px] text-emerald-300 flex items-center justify-between">
+          <div className="flex items-center gap-2">
+            <span className="material-symbols-outlined text-[15px] text-emerald-400">check</span>
+            <span>Authorized by Elena Rostova. Committed to AlloyDB Block 0x89F.</span>
+          </div>
+          <button
+            onClick={() => {
+              setCanvasTab("artifacts");
+              setArtifactSubTab("sheets");
+            }}
+            className="text-[10px] text-executive-blue hover:underline font-mono"
+          >
+            View Live Ledger →
+          </button>
+        </div>
+      ) : (
+        <div className="p-2.5 rounded border border-red-800/40 bg-red-950/20 font-mono text-[11px] text-red-300 flex items-center gap-2">
+          <span className="material-symbols-outlined text-[15px] text-red-400">cancel</span>
+          <span>Transaction rejected. Pre-ingest state restored in AlloyDB audit ledger.</span>
         </div>
       )}
-
-      {/* Deterministic Math Breakdown Table */}
-      <div className="mt-3 p-3 rounded-lg bg-slate-900/80 border border-slate-800">
-        <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 mb-2 flex items-center justify-between">
-          <span>Deterministic Arithmetic Verification (Python Decimal)</span>
-          <span className="text-emerald-400 font-mono text-[10px]">✓ Zero Drift Match</span>
-        </div>
-        <div className="grid grid-cols-4 gap-2 text-center text-xs font-mono">
-          <div className="p-1.5 rounded bg-slate-950/60 border border-slate-800">
-            <div className="text-[9px] uppercase text-slate-500">Subtotal</div>
-            <div className="text-slate-200 font-semibold">$3,900.00</div>
-          </div>
-          <div className="p-1.5 rounded bg-slate-950/60 border border-slate-800">
-            <div className="text-[9px] uppercase text-slate-500">Tax (7.69%)</div>
-            <div className="text-slate-200 font-semibold">$300.00</div>
-          </div>
-          <div className="p-1.5 rounded bg-slate-950/60 border border-slate-800">
-            <div className="text-[9px] uppercase text-slate-500">Discount</div>
-            <div className="text-slate-200 font-semibold">$0.00</div>
-          </div>
-          <div className="p-1.5 rounded bg-emerald-950/30 border border-emerald-500/30 text-emerald-300">
-            <div className="text-[9px] uppercase text-emerald-400">Total</div>
-            <div className="font-bold">$4,200.00</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Policy Warnings List */}
-      <div className="mt-2 text-[11px] text-slate-300 space-y-1">
-        <div className="flex items-center gap-1.5 text-amber-300">
-          <AlertTriangle className="w-3.5 h-3.5 shrink-0" />
-          <span>Payment terms specified: Net 15 days (Corporate policy mandates Net 30 days pursuant to §8.1)</span>
-        </div>
-      </div>
-
-      {/* Interactive Actions / Decision State */}
-      <div className="mt-4 pt-3 border-t border-slate-800/80 flex items-center justify-between">
-        {hitlDecision === "PENDING_REVIEW" ? (
-          <>
-            <div className="text-[11px] text-slate-400 flex items-center gap-1 font-mono">
-              <Lock className="w-3 h-3 text-amber-400" />
-              <span>Requires Manager OAuth 2.0 PKCE sign-off</span>
-            </div>
-            <div className="flex items-center gap-2">
-              <button
-                onClick={rejectHITL}
-                className="px-3 py-1.5 rounded-md text-xs font-medium text-slate-300 hover:text-rose-300 hover:bg-rose-950/30 border border-slate-700 transition-colors flex items-center gap-1.5"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-                <span>Reject & Rollback</span>
-              </button>
-              <button
-                onClick={handleAuthorize}
-                className="px-4 py-1.5 rounded-md text-xs font-semibold bg-amber-500 hover:bg-amber-400 text-slate-950 shadow-sm shadow-amber-500/30 transition-all flex items-center gap-1.5"
-              >
-                <KeyRound className="w-3.5 h-3.5" />
-                <span>Authorize & Post to Ledger (OAuth Sign-off)</span>
-              </button>
-            </div>
-          </>
-        ) : hitlDecision === "AUTHORIZED" ? (
-          <div className="w-full flex items-center justify-between text-xs">
-            <div className="flex items-center gap-2 text-emerald-300">
-              <CheckCircle2 className="w-4 h-4 text-emerald-400" />
-              <span>
-                Authorized by <strong className="text-white">Elena Rostova</strong> (OAuth Token #sig-99e2f)
-              </span>
-            </div>
-            <button
-              onClick={() => {
-                setCanvasTab("artifacts");
-                setArtifactSubTab("sheets");
-              }}
-              className="text-[11px] text-blue-400 hover:underline flex items-center gap-1 font-mono"
-            >
-              <FileSpreadsheet className="w-3 h-3" />
-              <span>View Row in Sheets Ledger</span>
-            </button>
-          </div>
-        ) : (
-          <div className="w-full flex items-center gap-2 text-xs text-rose-300">
-            <XCircle className="w-4 h-4 text-rose-400" />
-            <span>
-              Rejected by Manager. Compensating rollback payload committed to AlloyDB audit trail.
-            </span>
-          </div>
-        )}
-      </div>
     </motion.div>
   );
 }

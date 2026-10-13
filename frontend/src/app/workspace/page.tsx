@@ -1,33 +1,6 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import {
-  ShieldCheck,
-  ShieldAlert,
-  FileText,
-  FileDiff,
-  Table2,
-  ChevronRight,
-  Database,
-  Radio,
-  Send,
-  Paperclip,
-  Mic,
-  Sparkles,
-  Bot,
-  User,
-  ExternalLink,
-  PlusCircle,
-  Copy,
-  CheckCheck,
-  AlertTriangle,
-  History,
-  Layers,
-  ArrowUpRight,
-  Clock,
-  Terminal,
-} from "lucide-react";
 import Link from "next/link";
 import dynamic from "next/dynamic";
 import { useEKAStore } from "@/store/eka-store";
@@ -41,589 +14,510 @@ const PDFViewer = dynamic(
   {
     ssr: false,
     loading: () => (
-      <div className="flex-1 flex items-center justify-center text-muted-foreground text-xs p-8 text-center">
+      <div className="flex-1 flex items-center justify-center text-executive-dim text-xs p-8 text-center font-mono">
         <div className="space-y-2">
-          <div className="w-6 h-6 border-2 border-primary border-t-transparent rounded-full animate-spin mx-auto" />
-          <p>Initializing Document AI canvas & bounding boxes...</p>
+          <div className="w-5 h-5 border-2 border-executive-blue border-t-transparent rounded-full animate-spin mx-auto" />
+          <p>Initializing Document AI canvas &amp; OCR boundaries...</p>
         </div>
       </div>
     ),
   }
 );
 
-// ── Left Sidebar: Zone 1 ──────────────────────────────────────────────────────
-
-function LeftSidebar() {
+export default function WorkspacePage() {
   const {
     proxyMode,
     setProxyMode,
-    proxyEvents,
-    simulateInboundEvent,
     canvasTab,
     setCanvasTab,
-  } = useEKAStore();
-
-  const isOOO = proxyMode === "OOO_INTERCEPTING";
-  const queuedCount = proxyEvents.filter((e) => e.status === "QUEUED_HITL").length;
-  const autoResolvedCount = proxyEvents.filter((e) => e.status === "AUTO_RESOLVED").length;
-
-  return (
-    <aside className="w-[260px] shrink-0 bg-[#0B0F19] border-r border-[#1E293B] flex flex-col h-full text-foreground select-none">
-      {/* Brand Header */}
-      <div className="p-4 border-b border-[#1E293B]">
-        <div className="flex items-center gap-2.5">
-          <div className="w-8 h-8 rounded-lg bg-gradient-to-tr from-blue-600 to-cyan-400 p-0.5 shadow-md shadow-blue-500/20">
-            <div className="w-full h-full bg-[#0B0F19] rounded-[6px] flex items-center justify-center">
-              <ShieldCheck className="w-4 h-4 text-cyan-400" />
-            </div>
-          </div>
-          <div>
-            <div className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
-              <span>NexusWork</span>
-              <span className="text-[9px] font-mono px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-400 border border-blue-500/30">
-                v2.0
-              </span>
-            </div>
-            <div className="text-[10px] text-slate-400 font-medium">Autonomous Enterprise Agent</div>
-          </div>
-        </div>
-      </div>
-
-      {/* Workspace Proxy Status Widget */}
-      <div className="p-3 border-b border-[#1E293B] bg-slate-900/40">
-        <div className="p-3 rounded-xl bg-slate-900/90 border border-slate-800 shadow-sm space-y-2.5">
-          <div className="flex items-center justify-between">
-            <div className="flex items-center gap-1.5">
-              <Radio className="w-3.5 h-3.5 text-blue-400" />
-              <span className="text-xs font-semibold text-slate-200">Proxy Mode</span>
-            </div>
-            <button
-              onClick={() =>
-                setProxyMode(isOOO ? "ACTIVE_ATTENDING" : "OOO_INTERCEPTING")
-              }
-              className={`text-[10px] font-mono font-medium px-2 py-0.5 rounded-full transition-colors ${
-                isOOO
-                  ? "bg-emerald-500/20 text-emerald-300 border border-emerald-500/30"
-                  : "bg-slate-800 text-slate-400 border border-slate-700"
-              }`}
-            >
-              {isOOO ? "OOO Active" : "Direct Mode"}
-            </button>
-          </div>
-
-          {isOOO ? (
-            <div className="space-y-2">
-              <div className="flex items-center gap-2 text-[11px] text-emerald-400">
-                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-ping" />
-                <span className="font-medium">Autonomous Interceptor Active</span>
-              </div>
-              <div className="grid grid-cols-2 gap-1.5 text-center text-[10px] font-mono">
-                <div className="p-1 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
-                  <span className="block text-emerald-400 font-bold">{autoResolvedCount}</span>
-                  Auto-Resolved
-                </div>
-                <div className="p-1 rounded bg-slate-950/60 border border-slate-800 text-slate-300">
-                  <span className="block text-amber-400 font-bold">{queuedCount}</span>
-                  Queued HITL
-                </div>
-              </div>
-              <button
-                onClick={() => simulateInboundEvent()}
-                className="w-full text-[10px] py-1 px-2 rounded bg-slate-800 hover:bg-slate-700 text-slate-200 border border-slate-700 flex items-center justify-center gap-1 transition-colors"
-              >
-                <PlusCircle className="w-3 h-3 text-cyan-400" />
-                <span>Simulate Inbound Event</span>
-              </button>
-            </div>
-          ) : (
-            <p className="text-[11px] text-slate-400">
-              Agent is awaiting direct interactive prompts. Toggle OOO to enable background triaging.
-            </p>
-          )}
-        </div>
-      </div>
-
-      {/* Active Sessions & Audits */}
-      <div className="flex-1 overflow-y-auto px-3 py-3 space-y-4">
-        <div>
-          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-2 mb-2 flex items-center justify-between">
-            <span>Active Audits (Today)</span>
-            <span className="text-[9px] font-mono text-slate-500">3 active</span>
-          </div>
-          <div className="space-y-1">
-            <button
-              onClick={() => setCanvasTab("redlines")}
-              className={`w-full text-left p-2 rounded-lg text-xs transition-colors flex items-start gap-2 border ${
-                canvasTab === "redlines"
-                  ? "bg-blue-950/40 border-blue-500/40 text-white"
-                  : "bg-slate-900/40 border-transparent text-slate-300 hover:bg-slate-900"
-              }`}
-            >
-              <FileDiff className="w-4 h-4 text-rose-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium truncate">Initech EMEA MSA 2026</div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-rose-500/20 text-rose-300 font-mono">
-                    2 Redlines
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono">10:14 AM</span>
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setCanvasTab("docai")}
-              className={`w-full text-left p-2 rounded-lg text-xs transition-colors flex items-start gap-2 border ${
-                canvasTab === "docai"
-                  ? "bg-blue-950/40 border-blue-500/40 text-white"
-                  : "bg-slate-900/40 border-transparent text-slate-300 hover:bg-slate-900"
-              }`}
-            >
-              <FileText className="w-4 h-4 text-amber-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium truncate">Dell AP Inv #DELL-US-7721</div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-500/20 text-amber-300 font-mono">
-                    Awaiting HITL
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono">$4,200</span>
-                </div>
-              </div>
-            </button>
-
-            <button
-              onClick={() => setCanvasTab("artifacts")}
-              className={`w-full text-left p-2 rounded-lg text-xs transition-colors flex items-start gap-2 border ${
-                canvasTab === "artifacts"
-                  ? "bg-blue-950/40 border-blue-500/40 text-white"
-                  : "bg-slate-900/40 border-transparent text-slate-300 hover:bg-slate-900"
-              }`}
-            >
-              <Table2 className="w-4 h-4 text-emerald-400 shrink-0 mt-0.5" />
-              <div className="flex-1 min-w-0">
-                <div className="font-medium truncate">Acme SaaS #INV-2026-091</div>
-                <div className="flex items-center gap-1.5 mt-0.5">
-                  <span className="text-[9px] px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300 font-mono">
-                    Auto-Approved
-                  </span>
-                  <span className="text-[9px] text-slate-500 font-mono">$450</span>
-                </div>
-              </div>
-            </button>
-          </div>
-        </div>
-
-        {/* Grounded Knowledge Datastores */}
-        <div>
-          <div className="text-[10px] uppercase font-bold tracking-wider text-slate-400 px-2 mb-2 flex items-center justify-between">
-            <span>Grounded Knowledge Base</span>
-            <Database className="w-3 h-3 text-slate-500" />
-          </div>
-          <div className="p-2.5 rounded-lg bg-slate-900/60 border border-slate-800 text-[11px] space-y-1.5">
-            <div className="flex items-center gap-1.5 text-slate-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              <span className="truncate">Global Travel & Expense Policy 2026</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-slate-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              <span className="truncate">Procurement Rules & Boilerplate v4.2</span>
-            </div>
-            <div className="flex items-center gap-1.5 text-slate-300">
-              <span className="w-1.5 h-1.5 rounded-full bg-blue-400" />
-              <span className="truncate">EU AI Act & GDPR Chapter V</span>
-            </div>
-          </div>
-        </div>
-      </div>
-
-      {/* Bottom Profile & Principal Section */}
-      <div className="p-3 border-t border-[#1E293B] bg-slate-950/60 space-y-2">
-        <Link
-          href="/audit"
-          className="w-full text-xs py-1.5 px-2.5 rounded-lg bg-slate-900 hover:bg-slate-800 text-slate-200 border border-slate-800 flex items-center justify-between transition-colors"
-        >
-          <div className="flex items-center gap-2">
-            <ShieldCheck className="w-4 h-4 text-emerald-400" />
-            <span className="font-medium">Audit Ledger (AlloyDB)</span>
-          </div>
-          <ChevronRight className="w-3.5 h-3.5 text-slate-500" />
-        </Link>
-
-        <div className="pt-2 border-t border-slate-800/80 flex items-center gap-2">
-          <div className="w-7 h-7 rounded-full bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center text-xs font-bold text-indigo-300">
-            ER
-          </div>
-          <div className="flex-1 min-w-0">
-            <div className="text-xs font-medium text-slate-200 truncate">Elena Rostova</div>
-            <div className="text-[10px] text-slate-400 truncate">Senior AP & Compliance Lead</div>
-          </div>
-        </div>
-
-        <div className="text-[9px] font-mono text-slate-500 bg-slate-900/80 p-1.5 rounded border border-slate-800/80 truncate">
-          spiffe://corp.internal/agents/nexuswork
-        </div>
-      </div>
-    </aside>
-  );
-}
-
-// ── Center Stage: Zone 2 ──────────────────────────────────────────────────────
-
-function CenterStage() {
-  const {
     messages,
     addMessage,
     isStreamingChat,
-    setCanvasTab,
   } = useEKAStore();
 
-  const [promptText, setPromptText] = useState("");
-  const chatScrollRef = useRef<HTMLDivElement>(null);
+  const isOOO = proxyMode === "OOO_INTERCEPTING";
+  const toggleProxy = () => {
+    setProxyMode(isOOO ? "ACTIVE_ATTENDING" : "OOO_INTERCEPTING");
+  };
+
+  const [inputVal, setInputVal] = useState("");
+  const messagesEndRef = useRef<HTMLDivElement>(null);
+
+  const isStreaming = isStreamingChat;
+
+  const sendMessage = (content: string) => {
+    addMessage({
+      id: `msg-${Date.now().toString(36)}`,
+      role: "user",
+      content,
+      timestamp: new Date(),
+    });
+    // Simulate an agent response after a short delay
+    setTimeout(() => {
+      addMessage({
+        id: `msg-${Date.now().toString(36)}-resp`,
+        role: "assistant",
+        content: `Processing directive: "${content}". NexusWork agent is analyzing against enterprise policy corpus…`,
+        timestamp: new Date(),
+      });
+    }, 800);
+  };
 
   useEffect(() => {
-    chatScrollRef.current?.scrollIntoView({ behavior: "smooth" });
+    messagesEndRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const handleSendPrompt = (e: React.FormEvent) => {
+  const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!promptText.trim()) return;
-
-    const userMsg = {
-      id: `usr-${Date.now()}`,
-      role: "user" as const,
-      content: promptText,
-      timestamp: new Date(),
-    };
-    addMessage(userMsg);
-    setPromptText("");
-
-    // Simulate grounded agent response
-    setTimeout(() => {
-      const agentReply = {
-        id: `asst-${Date.now()}`,
-        role: "assistant" as const,
-        content: `**NexusWork Policy Engine Evaluation:**  
-Pursuant to **Global Procurement Guidelines §8.1**, all vendor engagements in EMEA exceeding $1,000 must specify Net 30 payment terms and contain capped liability language.
-
-I have evaluated the agreement against our datastores:
-* **Payment Terms Check:** Flagged Net 15 requirement as non-standard.
-* **Liability Check:** Flagged uncapped clause as **CRITICAL**.
-* **Remediation Draft:** Staged in the **Compliance Redline Diff** canvas tab for your immediate review.`,
-        timestamp: new Date(),
-        citations: [
-          { claim_text: "Procurement Guidelines §8.1: Mandatory Net 30 terms", confidence_score: 0.97 },
-          { claim_text: "Enterprise Legal Risk Charter §14.2: Maximum 2x fee cap", confidence_score: 0.99 },
-        ],
-      };
-      addMessage(agentReply);
-    }, 600);
+    if (!inputVal.trim() || isStreaming) return;
+    sendMessage(inputVal.trim());
+    setInputVal("");
   };
 
   return (
-    <main className="flex-1 flex flex-col h-full bg-[#0F172A] text-foreground overflow-hidden">
-      {/* Top Bar */}
-      <div className="h-14 px-5 border-b border-[#1E293B] flex items-center justify-between shrink-0 bg-[#0F172A]/90 backdrop-blur">
-        <div>
-          <div className="flex items-center gap-2 text-xs text-slate-400">
-            <Link href="/" className="hover:text-slate-200">
-              NexusWork
-            </Link>
-            <ChevronRight className="w-3 h-3 text-slate-600" />
-            <span className="text-slate-300 font-medium">EMEA Master Agreements & AP</span>
-          </div>
-          <h2 className="text-sm font-semibold text-slate-100 mt-0.5">
-            Audit & Extract: Initech Vendor Contract #INV-2026-88
-          </h2>
-        </div>
-
-        {/* Latency & Governance Telemetry Pill + Stitch Prototype Link */}
-        <div className="flex items-center gap-2">
-          <a
-            href="/stitch.html"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="text-[10px] font-mono px-2.5 py-1 rounded-full bg-indigo-950/60 border border-indigo-500/40 text-indigo-300 hover:text-white flex items-center gap-1.5 transition-colors shadow-sm"
-            title="View pixel-perfect Google Stitch generated prototype"
-          >
-            <Sparkles className="w-3 h-3 text-cyan-400" />
-            <span>Google Stitch Prototype</span>
-            <ArrowUpRight className="w-3 h-3 text-indigo-400" />
-          </a>
-          <div className="text-[10px] font-mono px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-300 flex items-center gap-2 shadow-sm">
-            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
-            <span>RAG: 1.2s</span>
-            <span className="text-slate-600">|</span>
-            <span>DocAI: 4.8s</span>
-            <span className="text-slate-600">|</span>
-            <span className="text-amber-400 font-medium">AAL 3 "Eyes On" Active</span>
-          </div>
-        </div>
-      </div>
-
-      {/* Chat Stream Viewport */}
-      <div className="flex-1 overflow-y-auto p-5 space-y-4">
-        {/* Pre-seeded Welcome Context Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex gap-3 max-w-3xl"
-        >
-          <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0 text-blue-400">
-            <Bot className="w-4 h-4" />
-          </div>
-          <div className="flex-1 bg-slate-900/90 border border-slate-800 rounded-2xl p-4 text-xs text-slate-200 space-y-2.5 shadow-sm leading-relaxed">
-            <div className="font-semibold text-slate-100 flex items-center gap-2">
-              <span>NexusWork Autonomous Copilot</span>
-              <span className="text-[10px] font-mono text-cyan-400 bg-cyan-950/40 px-2 py-0.5 rounded border border-cyan-800/40">
-                Grounded Mode
+    <div className="bg-obsidian font-sans text-executive-primary min-h-screen antialiased flex flex-col selection:bg-executive-blue/20 selection:text-white">
+      {/* ========================================================================= */}
+      {/* 1. EXECUTIVE MINIMAL HEADER (52px)                                        */}
+      {/* ========================================================================= */}
+      <header className="h-[52px] bg-obsidian border-b border-obsidian-border flex items-center justify-between px-5 fixed top-0 left-0 right-0 z-50">
+        <div className="flex items-center gap-6">
+          <Link href="/" className="flex items-center gap-3 group">
+            <div className="w-5 h-5 rounded bg-white text-obsidian flex items-center justify-center font-mono text-[11px] font-bold tracking-tighter group-hover:bg-executive-primary transition-colors">
+              N
+            </div>
+            <div className="flex items-baseline gap-2">
+              <span className="font-medium text-[13px] tracking-tight text-white">NexusWork</span>
+              <span className="text-[10px] font-mono tracking-widest uppercase text-executive-dim">
+                AP Core
               </span>
             </div>
-            <p>
-              I have loaded <strong>Initech_EMEA_MSA_2026.pdf</strong> and synchronized invoice line items. Pre-execution compliance scan identified <strong>2 policy violations</strong>. The AAL 3 deterministic gatekeeper has paused execution for high-value items pending human sign-off.
-            </p>
-            <div className="flex items-center gap-2 pt-1">
-              <button
-                onClick={() => setCanvasTab("redlines")}
-                className="text-[11px] px-2.5 py-1 rounded bg-rose-500/20 hover:bg-rose-500/30 text-rose-300 border border-rose-500/30 flex items-center gap-1 font-medium transition-colors"
-              >
-                <FileDiff className="w-3.5 h-3.5" />
-                <span>View Redline Clause Diff</span>
-              </button>
-              <button
-                onClick={() => setCanvasTab("artifacts")}
-                className="text-[11px] px-2.5 py-1 rounded bg-emerald-500/20 hover:bg-emerald-500/30 text-emerald-300 border border-emerald-500/30 flex items-center gap-1 font-medium transition-colors"
-              >
-                <Table2 className="w-3.5 h-3.5" />
-                <span>View Sheets AP Ledger</span>
-              </button>
-            </div>
+          </Link>
+          <div className="h-3 w-px bg-obsidian-border" />
+          <div className="flex items-center gap-2 text-[12px] text-executive-muted font-normal">
+            <span>Cockpit</span>
+            <span className="text-[10px] text-executive-dim">/</span>
+            <span className="text-white font-medium">Autonomous AP Orchestration</span>
           </div>
-        </motion.div>
+        </div>
 
-        {/* User Document Upload Thumbnail Message */}
-        <motion.div
-          initial={{ opacity: 0, y: 10 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="flex justify-end gap-3 max-w-3xl ml-auto"
-        >
-          <div className="bg-blue-600/15 border border-blue-500/30 rounded-2xl p-3 text-xs text-slate-200 max-w-md shadow-sm space-y-1.5">
-            <div className="flex items-center gap-2">
-              <FileText className="w-4 h-4 text-blue-400" />
-              <span className="font-medium text-white">Invoice_Dell_PowerEdge_R750.pdf</span>
-              <span className="text-[10px] text-slate-400 font-mono">(2.4 MB)</span>
-            </div>
-            <p className="text-[11px] text-slate-300">
-              Audit this invoice against corporate AP policy and check EMEA vendor terms.
-            </p>
-          </div>
-          <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 text-indigo-300 font-bold text-xs">
-            ER
-          </div>
-        </motion.div>
-
-        {/* Interactive AAL 3 HITL Action Gatekeeper Card */}
-        <HITLActionCard />
-
-        {/* Dynamic User Messages */}
-        {messages.map((msg) => (
-          <motion.div
-            key={msg.id}
-            initial={{ opacity: 0, y: 8 }}
-            animate={{ opacity: 1, y: 0 }}
-            className={`flex gap-3 max-w-3xl ${
-              msg.role === "user" ? "ml-auto justify-end" : ""
-            }`}
+        <div className="flex items-center gap-5">
+          <Link
+            href="/stitch.html"
+            target="_blank"
+            className="hidden md:flex items-center gap-1.5 px-2 py-0.5 rounded border border-obsidian-border text-[10px] font-mono text-executive-dim hover:text-white transition-colors"
           >
-            {msg.role === "assistant" && (
-              <div className="w-8 h-8 rounded-lg bg-blue-600/20 border border-blue-500/30 flex items-center justify-center shrink-0 text-blue-400">
-                <Bot className="w-4 h-4" />
+            <span>Stitch Preview</span>
+            <span className="material-symbols-outlined text-[11px]">open_in_new</span>
+          </Link>
+          <div className="flex items-center gap-2 font-mono text-[11px]">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+            <span className="text-executive-dim">LEDGER:</span>
+            <span className="text-white font-medium tracking-tight">SYNCED #9421-B</span>
+          </div>
+          <div className="h-3 w-px bg-obsidian-border" />
+          <div className="flex items-center gap-2.5">
+            <div className="text-right">
+              <div className="text-[12px] font-medium text-white leading-tight">Elena Rostova</div>
+              <div className="text-[10px] text-executive-dim font-mono leading-tight">
+                Senior AP Lead
               </div>
-            )}
-            <div
-              className={`rounded-2xl p-4 text-xs leading-relaxed space-y-2 shadow-sm ${
-                msg.role === "user"
-                  ? "bg-blue-600/15 border border-blue-500/30 text-white max-w-md"
-                  : "bg-slate-900/90 border border-slate-800 text-slate-200 flex-1"
-              }`}
-            >
-              <div className="whitespace-pre-line">{msg.content}</div>
+            </div>
+            <div className="w-6 h-6 rounded-full bg-obsidian-panel border border-obsidian-border flex items-center justify-center font-mono text-[10px] text-white">
+              ER
+            </div>
+          </div>
+        </div>
+      </header>
 
-              {msg.citations && msg.citations.length > 0 && (
-                <div className="pt-2 border-t border-slate-800/80 space-y-1">
-                  <div className="text-[10px] uppercase font-bold text-slate-400 flex items-center gap-1">
-                    <Sparkles className="w-3 h-3 text-cyan-400" />
-                    <span>Grounded Citations</span>
-                  </div>
-                  {msg.citations.map((c, i) => (
+      {/* ========================================================================= */}
+      {/* 2. WORKBENCH CONTAINER                                                    */}
+      {/* ========================================================================= */}
+      <div className="pt-[52px] flex-1 flex flex-col h-screen">
+        {/* Precision Sub-Header Horizon Telemetry Bar (38px) */}
+        <div className="h-[38px] px-5 bg-obsidian-subtle border-b border-obsidian-border flex items-center justify-between text-[11px] text-executive-muted shrink-0">
+          <div className="flex items-center gap-3 font-mono">
+            <span className="text-executive-dim uppercase tracking-wider text-[10px]">Workstream</span>
+            <span className="text-white font-medium">#REQ-2026-EMEA-09</span>
+            <span className="text-obsidian-divider">—</span>
+            <span className="text-executive-dim">Counterparty</span>
+            <span className="text-white font-medium">Dell EMEA S.A.</span>
+          </div>
+          <div className="flex items-center gap-4 font-mono text-[11px]">
+            <div className="flex items-center gap-1.5 text-executive-muted">
+              <span className="w-1.5 h-1.5 rounded-full bg-amber-400" />
+              <span className="text-executive-primary">AAL-3 REQUIREMENT</span>
+            </div>
+            <div className="text-obsidian-divider">/</div>
+            <div className="flex items-center gap-1 text-executive-dim">
+              <span className="material-symbols-outlined text-[13px] text-executive-dim">
+                verified
+              </span>
+              <span>ALLOYDB SECURED</span>
+            </div>
+          </div>
+        </div>
+
+        {/* Dynamic 3-Column Swiss Grid Layout */}
+        <div className="flex-1 flex overflow-hidden">
+          {/* ======================================================================= */}
+          {/* PANE 1: LEFT NAVIGATION & CONTEXT (240px Fixed)                         */}
+          {/* ======================================================================= */}
+          <aside className="w-[240px] shrink-0 bg-obsidian border-r border-obsidian-border flex flex-col justify-between overflow-y-auto p-4 gap-5">
+            <div className="flex flex-col gap-6">
+              {/* OOO Proxy Toggle */}
+              <div className="pb-4 border-b border-obsidian-border flex flex-col gap-2">
+                <div className="flex items-center justify-between">
+                  <span className="text-[11px] font-medium tracking-tight text-white flex items-center gap-1.5">
+                    <span
+                      className={`w-1.5 h-1.5 rounded-full ${
+                        isOOO ? "bg-emerald-400" : "bg-executive-dim"
+                      }`}
+                    />
+                    OOO Proxy
+                  </span>
+                  <button
+                    onClick={toggleProxy}
+                    aria-label="Toggle Autonomous Delegation"
+                    className={`w-7 h-4 rounded-full relative p-0.5 transition-colors focus:outline-none cursor-pointer ${
+                      isOOO ? "bg-emerald-500" : "bg-obsidian-border"
+                    }`}
+                  >
                     <div
-                      key={i}
-                      className="text-[10px] font-mono text-cyan-300 bg-cyan-950/30 border border-cyan-800/40 p-1.5 rounded flex items-center justify-between"
+                      className={`w-3 h-3 rounded-full bg-white transition-transform ${
+                        isOOO ? "translate-x-3" : "translate-x-0"
+                      }`}
+                    />
+                  </button>
+                </div>
+                <p className="text-[10px] text-executive-dim leading-relaxed font-mono">
+                  {isOOO ? "Net 30 auto-negotiation active" : "Interactive monitoring mode"}
+                </p>
+              </div>
+
+              {/* Verification Queue */}
+              <div className="flex flex-col gap-2">
+                <div className="flex items-center justify-between px-0.5 mb-1">
+                  <span className="text-[10px] font-mono tracking-wider uppercase text-executive-dim">
+                    Verification Queue
+                  </span>
+                  <span className="text-[10px] font-mono text-executive-dim">3</span>
+                </div>
+
+                {/* Queue Item 1 (Selected) */}
+                <div className="p-2.5 rounded border border-obsidian-border bg-obsidian-panel relative cursor-pointer">
+                  <div className="flex items-baseline justify-between mb-1">
+                    <span className="text-[12px] font-medium text-white truncate">
+                      Dell EMEA #7721
+                    </span>
+                    <span className="text-[9px] font-mono text-amber-400">AAL 3</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-executive-dim font-variant-numeric">
+                    <span>$4,200.00</span>
+                    <span className="text-amber-400 text-[10px]">Pending HITL</span>
+                  </div>
+                </div>
+
+                {/* Queue Item 2 */}
+                <div
+                  onClick={() => setCanvasTab("redlines")}
+                  className="p-2.5 rounded hover:bg-obsidian-subtle border border-transparent cursor-pointer transition-all"
+                >
+                  <div className="flex items-baseline justify-between mb-1">
+                    <span className="text-[12px] font-normal text-executive-muted truncate">
+                      Initech MSA 2026
+                    </span>
+                    <span className="text-[9px] font-mono text-executive-dim">2 Diff</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-executive-dim">
+                    <span>Clause 14.2</span>
+                    <span className="text-[10px]">Redline</span>
+                  </div>
+                </div>
+
+                {/* Queue Item 3 */}
+                <div
+                  onClick={() => setCanvasTab("artifacts")}
+                  className="p-2.5 rounded hover:bg-obsidian-subtle border border-transparent cursor-pointer transition-all"
+                >
+                  <div className="flex items-baseline justify-between mb-1">
+                    <span className="text-[12px] font-normal text-executive-muted truncate">
+                      Acme SaaS INV-091
+                    </span>
+                    <span className="text-[9px] font-mono text-emerald-400">Cleared</span>
+                  </div>
+                  <div className="flex items-center justify-between text-[11px] font-mono text-executive-dim font-variant-numeric">
+                    <span>$780.00</span>
+                    <span className="text-emerald-400/80 text-[10px]">Auto-settled</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Grounding Reference */}
+              <div className="flex flex-col gap-1.5 pt-4 border-t border-obsidian-border">
+                <div className="text-[10px] font-mono uppercase tracking-wider text-executive-dim px-0.5 mb-1">
+                  Grounding Reference
+                </div>
+                <div className="flex items-center justify-between py-1 px-1 text-[11px] text-executive-muted">
+                  <span className="truncate">Procurement Policy</span>
+                  <span className="text-executive-dim font-mono text-[10px]">§8.1</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-1 text-[11px] text-executive-muted">
+                  <span className="truncate">Hardware Thresholds</span>
+                  <span className="text-executive-dim font-mono text-[10px]">§4.2</span>
+                </div>
+                <div className="flex items-center justify-between py-1 px-1 text-[11px] text-executive-muted">
+                  <span className="truncate">Master Service Terms</span>
+                  <span className="text-executive-dim font-mono text-[10px]">v4.2</span>
+                </div>
+              </div>
+            </div>
+
+            {/* Bottom System Identity & Audit Link */}
+            <div className="pt-4 border-t border-obsidian-border flex flex-col gap-2 font-mono text-[10px]">
+              <div className="px-2 py-1 rounded bg-obsidian border border-obsidian-border text-executive-dim flex items-center justify-between">
+                <span className="truncate">spiffe://corp/agent-core</span>
+                <span className="text-emerald-400 ml-1">mTLS</span>
+              </div>
+              <Link
+                href="/audit"
+                className="w-full flex items-center justify-center gap-1.5 py-1 px-2 rounded border border-obsidian-border text-executive-muted hover:text-white text-[10px] font-sans transition-all"
+              >
+                <span className="material-symbols-outlined text-[13px] text-executive-dim">
+                  history
+                </span>
+                <span>AlloyDB Audit Trail</span>
+              </Link>
+            </div>
+          </aside>
+
+          {/* ======================================================================= */}
+          {/* PANE 2: CENTER STAGE - EXECUTIVE AUDIT WORKSPACE (Flex-1)               */}
+          {/* ======================================================================= */}
+          <section className="flex-1 bg-obsidian-subtle flex flex-col justify-between overflow-hidden relative">
+            {/* Center Stage Header */}
+            <div className="px-6 py-3 border-b border-obsidian-border flex items-center justify-between bg-obsidian shrink-0">
+              <div className="flex flex-col gap-0.5">
+                <div className="text-[13px] font-medium text-white flex items-center gap-2">
+                  <span>Dell Enterprise AP Ingest</span>
+                  <span className="font-mono text-xs text-executive-dim font-normal">
+                    #DELL-US-7721
+                  </span>
+                </div>
+                <div className="text-[11px] text-executive-dim font-mono">
+                  Autonomous Proxy • DocAI Confidence 91.2%
+                </div>
+              </div>
+              <div className="font-mono text-[10px] text-executive-dim flex items-center gap-3">
+                <span>RAG 1.2s</span>
+                <span>•</span>
+                <span>Inference 4.8s</span>
+              </div>
+            </div>
+
+            {/* Scrollable Center Content */}
+            <div className="flex-1 overflow-y-auto p-6 flex flex-col gap-5 max-w-4xl mx-auto w-full">
+              {/* Attached Document File Chip */}
+              <div className="flex justify-end">
+                <div
+                  onClick={() => setCanvasTab("docai")}
+                  className="px-2.5 py-1 rounded border border-obsidian-border bg-obsidian flex items-center gap-2 text-executive-muted cursor-pointer hover:border-executive-dim transition-colors"
+                >
+                  <span className="material-symbols-outlined text-[14px] text-executive-dim">
+                    description
+                  </span>
+                  <span className="text-[11px] text-white font-mono font-medium">
+                    Invoice_Dell_PowerEdge_R750.pdf
+                  </span>
+                  <span className="text-[10px] text-executive-dim font-mono">2.4 MB</span>
+                </div>
+              </div>
+
+              {/* Autonomous AP Analysis Box */}
+              <div className="rounded border border-obsidian-border bg-obsidian p-4 flex flex-col gap-2.5">
+                <div className="flex items-center justify-between pb-2 border-b border-obsidian-border">
+                  <div className="flex items-center gap-2">
+                    <span className="material-symbols-outlined text-[14px] text-executive-dim">
+                      account_tree
+                    </span>
+                    <span className="text-[12px] font-medium text-white">
+                      Autonomous AP Analysis
+                    </span>
+                  </div>
+                  <span className="text-[10px] font-mono text-executive-dim">
+                    Rule Match: 14 Tokens
+                  </span>
+                </div>
+                <p className="text-[12px] leading-relaxed text-executive-muted">
+                  Line items match purchase requisition{" "}
+                  <span className="font-mono text-white font-medium">#PR-8812</span>. Line total and
+                  calculated VAT are deterministically verified. Identified conflict: Vendor PDF
+                  requests <span className="text-white font-medium">Net 15</span>, conflicting with
+                  Global Procurement Policy requiring{" "}
+                  <span className="text-white font-medium">Net 30</span>.
+                </p>
+                <div className="flex items-center gap-2 font-mono text-[10px]">
+                  <span className="px-1.5 py-0.5 rounded border border-obsidian-border text-executive-dim">
+                    §4.2 Hardware Valid
+                  </span>
+                  <span className="px-1.5 py-0.5 rounded border border-amber-800/40 text-amber-300">
+                    §8.1 Payment Terms Conflict
+                  </span>
+                </div>
+              </div>
+
+              {/* AAL 3 Consequential Action Gatekeeper Card */}
+              <HITLActionCard />
+
+              {/* Extra Dynamic Chat Messages (if any) */}
+              {messages.length > 0 && (
+                <div className="space-y-3 pt-2">
+                  {messages.map((m) => (
+                    <div
+                      key={m.id}
+                      className={`p-3.5 rounded border text-[12px] leading-relaxed ${
+                        m.role === "user"
+                          ? "bg-obsidian border-obsidian-border text-white ml-8"
+                          : "bg-obsidian-panel border-obsidian-border text-executive-primary mr-8"
+                      }`}
                     >
-                      <span>{c.claim_text}</span>
-                      <span className="text-slate-400">{(c.confidence_score * 100).toFixed(0)}%</span>
+                      <div className="text-[10px] font-mono text-executive-dim mb-1 uppercase tracking-wider">
+                        {m.role === "user" ? "Directive" : "Agent Response"}
+                      </div>
+                      <div className="whitespace-pre-wrap">{m.content}</div>
                     </div>
                   ))}
                 </div>
               )}
+
+              <div ref={messagesEndRef} />
             </div>
-            {msg.role === "user" && (
-              <div className="w-8 h-8 rounded-lg bg-indigo-600/30 border border-indigo-500/40 flex items-center justify-center shrink-0 text-indigo-300 font-bold text-xs">
-                ER
-              </div>
-            )}
-          </motion.div>
-        ))}
 
-        <div ref={chatScrollRef} />
-      </div>
+            {/* Bottom Directive Prompt Bar */}
+            <div className="p-4 bg-obsidian border-t border-obsidian-border shrink-0">
+              <form
+                onSubmit={handleSubmit}
+                className="max-w-4xl mx-auto flex items-center gap-2 bg-obsidian-subtle border border-obsidian-border rounded px-3 py-1.5 focus-within:border-white transition-colors"
+              >
+                <span className="material-symbols-outlined text-[14px] text-executive-dim">
+                  terminal
+                </span>
+                <input
+                  type="text"
+                  value={inputVal}
+                  onChange={(e) => setInputVal(e.target.value)}
+                  placeholder="Directive or query for AP agent..."
+                  className="flex-1 bg-transparent text-[12px] text-white placeholder:text-executive-dim focus:outline-none font-mono"
+                />
+                <button
+                  type="submit"
+                  disabled={!inputVal.trim() || isStreaming}
+                  className="px-2 py-0.5 rounded border border-obsidian-border text-executive-muted hover:text-white text-[10px] font-mono uppercase tracking-wider transition-colors disabled:opacity-40"
+                >
+                  Exec
+                </button>
+              </form>
+            </div>
+          </section>
 
-      {/* Bottom Multi-Modal Input Bar */}
-      <div className="p-4 border-t border-[#1E293B] bg-[#0F172A]/90 shrink-0">
-        <form
-          onSubmit={handleSendPrompt}
-          className="flex items-center gap-2 p-2 rounded-xl bg-slate-900 border border-slate-800 focus-within:border-blue-500/60 shadow-lg"
-        >
-          <button
-            type="button"
-            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
-            title="Upload invoice or contract document"
-          >
-            <Paperclip className="w-4 h-4" />
-          </button>
-          <input
-            type="text"
-            value={promptText}
-            onChange={(e) => setPromptText(e.target.value)}
-            placeholder="Ask policy questions, audit contracts, or instruct proxy..."
-            className="flex-1 bg-transparent border-none text-xs text-slate-100 placeholder:text-slate-500 focus:outline-none"
-          />
-          <button
-            type="button"
-            className="p-2 text-slate-400 hover:text-slate-200 hover:bg-slate-800 rounded-lg transition-colors"
-            title="Voice input"
-          >
-            <Mic className="w-4 h-4" />
-          </button>
-          <button
-            type="submit"
-            className="px-3.5 py-1.5 rounded-lg bg-blue-600 hover:bg-blue-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-colors shadow-sm shadow-blue-600/40"
-          >
-            <span>Send</span>
-            <Send className="w-3.5 h-3.5" />
-          </button>
-        </form>
-      </div>
-    </main>
-  );
-}
+          {/* ======================================================================= */}
+          {/* PANE 3: RIGHT DYNAMIC CANVAS (500px Fixed)                              */}
+          {/* ======================================================================= */}
+          <aside className="w-[500px] shrink-0 bg-obsidian border-l border-obsidian-border flex flex-col justify-between overflow-hidden">
+            {/* Top Canvas Tabs */}
+            <div className="flex items-center bg-obsidian border-b border-obsidian-border px-4 pt-2 gap-5 shrink-0">
+              <button
+                onClick={() => setCanvasTab("redlines")}
+                className={`pb-2.5 text-[12px] flex items-center gap-1.5 transition-all ${
+                  canvasTab === "redlines"
+                    ? "font-semibold text-white border-b-2 border-executive-blue"
+                    : "font-medium text-executive-dim hover:text-white border-b-2 border-transparent"
+                }`}
+              >
+                <span>Clause Redline</span>
+                <span className="px-1.5 py-0.2 rounded border border-amber-800/50 text-amber-300 font-mono text-[9px]">
+                  2 VARIANCE
+                </span>
+              </button>
 
-// ── Right Dynamic Canvas: Zone 3 ──────────────────────────────────────────────
+              <button
+                onClick={() => setCanvasTab("docai")}
+                className={`pb-2.5 text-[12px] flex items-center gap-1.5 transition-all ${
+                  canvasTab === "docai"
+                    ? "font-semibold text-white border-b-2 border-executive-blue"
+                    : "font-medium text-executive-dim hover:text-white border-b-2 border-transparent"
+                }`}
+              >
+                <span>Document AI</span>
+                <span className="text-executive-dim font-mono text-[10px]">91.2%</span>
+              </button>
 
-function RightCanvas() {
-  const { canvasTab, setCanvasTab, redlines, ledgerRows } = useEKAStore();
+              <button
+                onClick={() => setCanvasTab("artifacts")}
+                className={`pb-2.5 text-[12px] flex items-center gap-1.5 transition-all ${
+                  canvasTab === "artifacts"
+                    ? "font-semibold text-white border-b-2 border-executive-blue"
+                    : "font-medium text-executive-dim hover:text-white border-b-2 border-transparent"
+                }`}
+              >
+                <span>Live Ledger</span>
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400" />
+              </button>
+            </div>
 
-  const activeFlagsCount = redlines.filter((r) => !r.applied).length;
+            {/* Dynamic Canvas View Body */}
+            <div className="flex-1 overflow-hidden flex flex-col">
+              {canvasTab === "redlines" && <RedlineDiffViewer />}
 
-  return (
-    <aside className="w-[540px] shrink-0 bg-[#0B0F19] border-l border-[#1E293B] flex flex-col h-full overflow-hidden select-none">
-      {/* Tab Navigation Header */}
-      <div className="h-14 px-4 border-b border-[#1E293B] flex items-center justify-between shrink-0 bg-[#0B0F19]">
-        <div className="flex items-center gap-1 bg-slate-900 p-1 rounded-xl border border-slate-800">
-          {/* Tab 1: Document AI Preview */}
-          <button
-            onClick={() => setCanvasTab("docai")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              canvasTab === "docai"
-                ? "bg-slate-800 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <FileText className="w-3.5 h-3.5 text-blue-400" />
-            <span>Document AI</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-blue-500/20 text-blue-300">
-              95% Conf
-            </span>
-          </button>
+              {canvasTab === "docai" && (
+                <div className="flex-1 p-5 flex flex-col justify-between overflow-y-auto gap-4 bg-obsidian text-executive-primary">
+                  <div className="flex flex-col gap-3">
+                    <div className="flex items-center justify-between pb-2 border-b border-obsidian-border">
+                      <div className="text-[12px] font-medium text-white">Document AI Parsing</div>
+                      <span className="font-mono text-[10px] text-executive-dim">
+                        Dell_Invoice.pdf
+                      </span>
+                    </div>
 
-          {/* Tab 2: Compliance Redline Diff */}
-          <button
-            onClick={() => setCanvasTab("redlines")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              canvasTab === "redlines"
-                ? "bg-rose-950/60 border border-rose-500/40 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <FileDiff className="w-3.5 h-3.5 text-rose-400" />
-            <span>Redline Diff</span>
-            <span
-              className={`text-[10px] font-mono px-1.5 py-0.2 rounded ${
-                activeFlagsCount > 0
-                  ? "bg-rose-500/20 text-rose-300 font-bold"
-                  : "bg-emerald-500/20 text-emerald-300"
-              }`}
-            >
-              {activeFlagsCount} Flags
-            </span>
-          </button>
+                    <div className="rounded border border-obsidian-border bg-obsidian-subtle p-4 flex flex-col gap-2.5 font-mono text-[11px]">
+                      <div className="flex justify-between items-center pb-2 border-b border-obsidian-border">
+                        <span className="text-executive-dim">Vendor</span>
+                        <span className="text-white font-sans">DELL ENTERPRISE EMEA S.A.</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-2 border-b border-obsidian-border">
+                        <span className="text-executive-dim">Invoice No.</span>
+                        <span className="text-white font-medium">#DELL-US-7721</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-2 border-b border-obsidian-border">
+                        <span className="text-executive-dim">Line 1: Server Unit</span>
+                        <span className="text-white font-mono">$3,400.00</span>
+                      </div>
+                      <div className="flex justify-between items-center pb-2 border-b border-obsidian-border">
+                        <span className="text-executive-dim">Line 2: ReadyRails II</span>
+                        <span className="text-white font-mono">$500.00</span>
+                      </div>
+                      <div className="flex justify-between items-center">
+                        <span className="text-executive-dim">Terms</span>
+                        <span className="text-amber-400">Net 15 Days</span>
+                      </div>
+                    </div>
 
-          {/* Tab 3: Live Workspace Artifacts */}
-          <button
-            onClick={() => setCanvasTab("artifacts")}
-            className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-medium transition-colors ${
-              canvasTab === "artifacts"
-                ? "bg-emerald-950/60 border border-emerald-500/40 text-white shadow-sm"
-                : "text-slate-400 hover:text-slate-200"
-            }`}
-          >
-            <Table2 className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Live Artifacts</span>
-            <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-emerald-500/20 text-emerald-300">
-              Sheets Live
-            </span>
-          </button>
+                    <div className="h-64 border border-obsidian-border rounded overflow-hidden">
+                      <PDFViewer />
+                    </div>
+                  </div>
+
+                  <div className="p-2 rounded bg-obsidian border border-obsidian-border text-[10px] text-executive-dim flex justify-between font-mono">
+                    <span>Schema: AP_ENTERPRISE_V2</span>
+                    <span>Tokens: 48</span>
+                  </div>
+                </div>
+              )}
+
+              {canvasTab === "artifacts" && <LiveArtifactCanvas />}
+            </div>
+          </aside>
         </div>
       </div>
-
-      {/* Tab Content Canvas Body */}
-      <div className="flex-1 overflow-hidden">
-        {canvasTab === "docai" && (
-          <div className="h-full flex flex-col">
-            <div className="px-4 py-2 border-b border-slate-800 bg-slate-900/40 flex items-center justify-between text-xs text-slate-300">
-              <span className="font-mono text-[11px] text-slate-400">
-                Parsed: <strong className="text-white">Dell_PowerEdge_R750_INV.pdf</strong>
-              </span>
-              <span className="text-[10px] text-emerald-400 font-mono">
-                ✓ 2D Bounding-Box Polygons Synced
-              </span>
-            </div>
-            <div className="flex-1 overflow-hidden">
-              <PDFViewer />
-            </div>
-          </div>
-        )}
-
-        {canvasTab === "redlines" && <RedlineDiffViewer />}
-
-        {canvasTab === "artifacts" && <LiveArtifactCanvas />}
-      </div>
-    </aside>
-  );
-}
-
-// ── Main Tri-Pane Page Assembly ───────────────────────────────────────────────
-
-export default function WorkspaceCockpitPage() {
-  return (
-    <div className="h-screen w-screen flex overflow-hidden bg-[#090D16]">
-      {/* Zone 1: Left Navigation (260px) */}
-      <LeftSidebar />
-
-      {/* Zone 2: Center Stage (Flex-1) */}
-      <CenterStage />
-
-      {/* Zone 3: Right Dynamic Canvas (540px) */}
-      <RightCanvas />
     </div>
   );
 }

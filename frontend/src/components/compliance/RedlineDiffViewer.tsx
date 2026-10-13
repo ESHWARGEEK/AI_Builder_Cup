@@ -1,168 +1,136 @@
 "use client";
 
+import { useState } from "react";
 import { motion } from "framer-motion";
-import {
-  FileDiff,
-  CheckCircle2,
-  AlertTriangle,
-  ShieldAlert,
-  ArrowRight,
-  ExternalLink,
-  Sparkles,
-} from "lucide-react";
 import { useEKAStore } from "@/store/eka-store";
 
 export function RedlineDiffViewer() {
   const { redlines, applyRedline } = useEKAStore();
+  const [downloadSuccess, setDownloadSuccess] = useState(false);
 
   const activeFlagsCount = redlines.filter((r) => !r.applied).length;
 
+  const handleExportDocx = () => {
+    const docxContent = `# NexusWork Approved Redline Contract Addendum\n\nGenerated for: Dell EMEA S.A.\nVerified against: Global Procurement Policy §8.1\n\n` +
+      redlines.map((r) => `## ${r.clause_type.toUpperCase()}\nStatus: ${r.applied ? "APPLIED" : "PENDING"}\nRevision: ${r.replacement_clause}\n`).join("\n");
+    const blob = new Blob([docxContent], { type: "text/plain" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = "Dell_EMEA_Approved_Redline.docx";
+    a.click();
+    URL.revokeObjectURL(url);
+    setDownloadSuccess(true);
+    setTimeout(() => setDownloadSuccess(false), 2000);
+  };
+
+  const handleApplyAll = () => {
+    redlines.forEach((r) => {
+      if (!r.applied) {
+        applyRedline(r.id);
+      }
+    });
+  };
+
   return (
-    <div className="flex flex-col h-full bg-[#0B0F19] text-foreground p-4 overflow-y-auto">
-      {/* Header */}
-      <div className="flex items-center justify-between pb-3 border-b border-border/60">
-        <div className="flex items-center gap-2">
-          <div className="w-7 h-7 rounded-lg bg-rose-500/10 border border-rose-500/20 flex items-center justify-center text-rose-400">
-            <FileDiff className="w-4 h-4" />
-          </div>
+    <div className="flex-1 p-5 flex flex-col justify-between overflow-y-auto gap-4 bg-obsidian text-executive-primary h-full">
+      <div className="flex flex-col gap-4">
+        {/* Header & Status Indicator */}
+        <div className="flex items-baseline justify-between pb-2 border-b border-obsidian-border">
           <div>
-            <h3 className="text-xs font-semibold tracking-wide uppercase text-slate-200">
-              Active Compliance Redline Engine
-            </h3>
-            <p className="text-[11px] text-muted-foreground">
-              Pre-execution audit against Procurement & Legal Policies
-            </p>
+            <div className="text-[12px] font-medium text-white">Clause 14.2 &amp; Policy §8.1</div>
+            <div className="text-[10px] text-executive-dim font-mono">Net 30 Alignment</div>
           </div>
-        </div>
-        <div className="flex items-center gap-2">
           <span
-            className={`text-[10px] font-mono px-2 py-0.5 rounded-full border ${
+            className={`font-mono text-[9px] uppercase tracking-wider px-1.5 py-0.5 rounded border ${
               activeFlagsCount > 0
-                ? "bg-rose-500/10 text-rose-400 border-rose-500/30"
-                : "bg-emerald-500/10 text-emerald-400 border-emerald-500/30"
+                ? "border-red-900/50 text-red-400 bg-red-950/20"
+                : "border-emerald-900/50 text-emerald-400 bg-emerald-950/20"
             }`}
           >
-            {activeFlagsCount > 0 ? `${activeFlagsCount} Active Flags` : "All Compliant"}
+            {activeFlagsCount > 0 ? `${activeFlagsCount} Variance` : "All Aligned"}
           </span>
         </div>
-      </div>
 
-      {/* Intro Context Banner */}
-      <div className="mt-3 p-3 rounded-lg bg-slate-900/80 border border-slate-800 text-xs text-slate-300">
-        <div className="flex items-start gap-2">
-          <Sparkles className="w-4 h-4 text-blue-400 shrink-0 mt-0.5" />
-          <div>
-            <span className="font-medium text-slate-100">
-              Contract Under Audit: Initech Master Services Agreement (EMEA)
-            </span>
-            <p className="text-[11px] text-slate-400 mt-0.5">
-              NexusWork scanned 14 clauses and flagged 2 non-compliant terms. Below are the recommended enterprise replacement clauses.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      {/* Redline Cards */}
-      <div className="mt-4 space-y-4">
-        {redlines.map((redline) => {
-          const isCritical = redline.severity === "CRITICAL";
-
-          return (
+        {/* Dynamic & Static Clauses */}
+        <div className="flex flex-col gap-3">
+          {redlines.map((redline) => (
             <motion.div
               key={redline.id}
               layout
-              className={`p-3.5 rounded-lg border transition-all ${
-                redline.applied
-                  ? "bg-slate-900/40 border-slate-800 opacity-80"
-                  : isCritical
-                  ? "bg-rose-950/20 border-rose-500/40 shadow-sm shadow-rose-950/30"
-                  : "bg-amber-950/20 border-amber-500/40 shadow-sm shadow-amber-950/30"
-              }`}
+              className="flex flex-col gap-2 font-mono text-[11px]"
             >
-              {/* Card Header */}
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  {isCritical ? (
-                    <ShieldAlert className="w-4 h-4 text-rose-400" />
-                  ) : (
-                    <AlertTriangle className="w-4 h-4 text-amber-400" />
-                  )}
-                  <span className="text-xs font-semibold capitalize text-slate-100">
-                    {redline.clause_type.replace(/_/g, " ")}
-                  </span>
+              {/* Vendor clause (-) */}
+              <div className="rounded border border-red-900/40 bg-obsidian-subtle p-3">
+                <div className="flex items-center justify-between text-[10px] text-red-400 mb-1.5 uppercase tracking-wider">
+                  <span>(-) Vendor Clause</span>
+                  <span>{redline.clause_type.replace("_", " ")}</span>
                 </div>
-                <div className="flex items-center gap-2">
-                  <span
-                    className={`text-[10px] font-mono px-2 py-0.5 rounded uppercase font-semibold ${
-                      isCritical
-                        ? "bg-rose-500/20 text-rose-300 border border-rose-500/30"
-                        : "bg-amber-500/20 text-amber-300 border border-amber-500/30"
-                    }`}
-                  >
-                    {redline.severity}
-                  </span>
-                  {redline.applied && (
-                    <span className="text-[10px] bg-emerald-500/20 text-emerald-300 px-2 py-0.5 rounded border border-emerald-500/30 flex items-center gap-1">
-                      <CheckCircle2 className="w-3 h-3" /> Applied
-                    </span>
-                  )}
+                <div className="text-executive-muted leading-relaxed font-mono">
+                  {redline.original_clause}
                 </div>
               </div>
 
-              {/* Policy Rationale & Citation */}
-              <p className="text-[11px] text-slate-300 mb-3 leading-relaxed">
-                {redline.policy_violation_rationale}
-              </p>
-              {redline.citation && (
-                <div className="mb-3 text-[10px] font-mono text-blue-400 bg-blue-950/30 border border-blue-900/50 px-2 py-1 rounded inline-flex items-center gap-1.5">
-                  <ExternalLink className="w-3 h-3" />
-                  <span>{redline.citation}</span>
+              {/* NexusWork replacement (+) */}
+              <div className="rounded border border-emerald-900/40 bg-obsidian-subtle p-3">
+                <div className="flex items-center justify-between text-[10px] text-emerald-400 mb-1.5 uppercase tracking-wider">
+                  <span>(+) NexusWork Policy Revision</span>
+                  <span className="flex items-center gap-1.5">
+                    {redline.applied ? (
+                      <span className="text-emerald-400 text-[9px] font-bold">✓ APPLIED</span>
+                    ) : (
+                      <button
+                        onClick={() => applyRedline(redline.id)}
+                        className="text-[9px] underline text-emerald-300 hover:text-white"
+                      >
+                        Accept
+                      </button>
+                    )}
+                  </span>
                 </div>
-              )}
-
-              {/* Git-Style Redline Comparison */}
-              <div className="space-y-2 text-xs font-mono">
-                {/* Original Clause (Red) */}
-                <div className="p-2.5 rounded bg-rose-950/30 border border-rose-500/30 text-rose-200">
-                  <div className="text-[10px] uppercase font-bold text-rose-400 mb-1 flex items-center gap-1">
-                    <span>[-] Offending Contract Clause</span>
-                  </div>
-                  <div className="leading-snug text-[11px] select-all">
-                    "{redline.original_clause}"
-                  </div>
+                <div className="text-white leading-relaxed font-mono">
+                  {redline.replacement_clause}
                 </div>
-
-                {/* Replacement Boilerplate (Green) */}
-                <div className="p-2.5 rounded bg-emerald-950/30 border border-emerald-500/30 text-emerald-200">
-                  <div className="text-[10px] uppercase font-bold text-emerald-400 mb-1 flex items-center gap-1">
-                    <span>[+] Approved Corporate Replacement</span>
-                  </div>
-                  <div className="leading-snug text-[11px] select-all">
-                    "{redline.replacement_clause}"
-                  </div>
+                <div className="mt-1 text-[9px] text-executive-dim">
+                  Policy Basis: {redline.citation}
                 </div>
-              </div>
-
-              {/* Action Button */}
-              <div className="mt-3 pt-2 border-t border-slate-800/80 flex justify-end">
-                {redline.applied ? (
-                  <div className="text-[11px] text-emerald-400 flex items-center gap-1.5 font-medium">
-                    <CheckCircle2 className="w-3.5 h-3.5" />
-                    Replacement applied to staged draft
-                  </div>
-                ) : (
-                  <button
-                    onClick={() => applyRedline(redline.id)}
-                    className="text-xs px-3 py-1.5 rounded-md bg-blue-600 hover:bg-blue-500 text-white font-medium flex items-center gap-1.5 transition-colors shadow-sm shadow-blue-900/40"
-                  >
-                    <span>Apply Approved Redline Draft</span>
-                    <ArrowRight className="w-3.5 h-3.5" />
-                  </button>
-                )}
               </div>
             </motion.div>
-          );
-        })}
+          ))}
+
+          {/* Penalty Variance Reference Box */}
+          <div className="rounded border border-obsidian-border bg-obsidian-subtle p-3 flex flex-col gap-1.5">
+            <div className="flex items-center justify-between text-[11px]">
+              <span className="font-medium text-executive-muted">Clause 18.1 Penalty Variance</span>
+              <span className="text-amber-400 font-mono text-[10px]">Negotiable</span>
+            </div>
+            <div className="font-mono text-[11px] p-2 rounded bg-obsidian border border-obsidian-border text-executive-dim flex items-center justify-between">
+              <span className="text-executive-dim line-through">1.5% monthly late compounding</span>
+              <span>→</span>
+              <span className="text-white font-medium">EURIBOR + 0.5% simple annual</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      {/* Action Footer */}
+      <div className="flex flex-col gap-2 pt-3 border-t border-obsidian-border mt-auto">
+        <button
+          onClick={handleApplyAll}
+          className="w-full py-2 px-3 rounded bg-white hover:bg-executive-primary text-obsidian text-[12px] font-medium flex items-center justify-center gap-2 transition-colors cursor-pointer active:scale-[0.99]"
+        >
+          <span className="material-symbols-outlined text-[14px]">check</span>
+          <span>Apply Approved Redline Draft</span>
+        </button>
+        <button
+          onClick={handleExportDocx}
+          className="w-full py-1.5 px-3 rounded border border-obsidian-border bg-transparent hover:bg-obsidian-panel text-executive-muted hover:text-white text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[13px]">
+            {downloadSuccess ? "done" : "file_download"}
+          </span>
+          <span>{downloadSuccess ? "Exported Successfully!" : "Export Clean Version (.docx)"}</span>
+        </button>
       </div>
     </div>
   );
